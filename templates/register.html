@@ -1,0 +1,33 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Registrácia v DPMB
+{% endblock title %}
+
+{% block mainContent %}
+
+    <div class="container mt-4">
+
+    <h1 class="text-center mt-4 mb-4">Registrácia nového zákazníka</h1>
+
+    <form method="POST" class="form-register">
+
+        {{ form.first_name.label() }}
+        {{ form.first_name(class="form-control", placeholder="Meno") }}
+        {{ form.last_name.label() }}
+        {{ form.last_name(class="form-control", placeholder="Priezvisko") }}
+        {{ form.email.label() }}
+        {{ form.email(class="form-control", placeholder="Email") }}
+        {{ form.password1.label() }}
+        {{ form.password1(class="form-control", placeholder="Heslo") }}
+        {{ form.password2.label() }}
+        {{ form.password2(class="form-control", placeholder="Potvrďte heslo") }}
+
+        {{ form.submit(class="btn btn-primary mt-4") }}
+    </form>
+
+    </div>
+    
+    
+{% endblock mainContent %}
+

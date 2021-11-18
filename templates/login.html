@@ -1,0 +1,26 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Klient DPMB
+{% endblock title %}
+
+{% block mainContent %}
+    <div class="container mt-4">
+
+    <h1 class="text-center mt-4 mb-4">Prihláste sa do svojho konta</h1>
+
+    <form method="POST" class="form-register">
+
+        {{ form.first_name.label() }}
+        {{ form.first_name(class="form-control", placeholder="Meno") }}
+        {{ form.last_name.label() }}
+        {{ form.last_name(class="form-control", placeholder="Priezvisko") }}
+        {{ form.password1.label() }}
+        {{ form.password1(class="form-control", placeholder="Heslo") }}
+
+        {{ form.submit(class="btn btn-primary mt-4") }}
+    </form>
+
+    </div>
+    
+{% endblock mainContent %}
