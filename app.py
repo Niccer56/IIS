@@ -1,4 +1,4 @@
-from dpmb.models import db, User
+from dpmb.models import db, User, UserType
 from dpmb.forms import LoginForm, RegisterForm
 from flask import render_template, flash, request, redirect
 from dpmb import app
@@ -11,7 +11,7 @@ def home_page():
 @app.route('/customer')
 def customer_page():
     user = User.query.all()
-    return render_template('customer.html', customers=user)
+    return render_template('customer.html', customers=user, usertype=UserType)
 
 @app.route('/login')
 def login_page():
@@ -38,10 +38,17 @@ def register_page():
         else:
             for err in form.errors:
                 flash(form.errors[err][0])
+    print(dir(User.type))
+    print(User.type)
     return render_template('register.html', form=form)
 
 @app.route('/customer/delete/<int:id>')
 def delete_user(id):
+    user = User.query.filter_by(id=id).first()
+    if user is not None:
+        db.session.delete(user)
+        db.session.commit()
+        print(f"User with id: {id} has been removed from the database")
     return redirect("/customer")
 
 

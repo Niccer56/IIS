@@ -1,4 +1,11 @@
 from dpmb import db
+from enum import Enum
+
+class UserType(Enum):
+    user = 1
+    staff = 2
+    carrier = 3
+    admin = 4
 
 class User(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -6,7 +13,7 @@ class User(db.Model):
     last_name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False) # TODO encryption
-    type = db.Column(db.String(20), nullable=False)
+    type = db.Column(db.Enum(UserType), nullable=False)
 
 class Ticket(db.Model):
     id = db.Column(db.Integer, primary_key=True)

@@ -19,7 +19,7 @@
         </tr>
       </thead>
       <tbody>
-        {% for customer in customers%}
+        {% for customer in customers %}
         <tr>
           <td>{{customer.id}}</td>
           <td>{{customer.first_name}}</td>
@@ -27,11 +27,12 @@
           <td>{{customer.email}}</td>
           <td>{{customer.password}}</td>
           <td><select class="custom-select">
-                <option selected>{{customer.type}}</option>
-                <option value="1">user</option>
-                <option value="2">staff</option>
-                <option value="3">carrier</option>
-                <option value="4">admin</option>
+                <option selected>{{customer.type.name}}</option>
+                {% for type in usertype %}
+                  {% if type != customer.type %}
+                    <option>{{type.name}}</option>
+                  {% endif %}
+                {% endfor %}
               </select>
           </td>
           <td><a href="{{url_for('delete_user', id=customer.id)}}" class="btn btn-outline-danger">Delete</button><td>
