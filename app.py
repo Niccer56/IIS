@@ -23,7 +23,9 @@ def register_page():
     form = RegisterForm()
     if request.method == 'POST':
         if form.validate_on_submit():
-            print("hello")
+            if len(User.query.filter_by(email=form.email.data).all()) != 0:
+                flash("This email adress is already in use.")
+                return render_template('register.html', form=form)
             reg = User()
             reg.first_name = form.first_name.data
             reg.last_name = form.last_name.data
@@ -37,6 +39,10 @@ def register_page():
             for err in form.errors:
                 flash(form.errors[err][0])
     return render_template('register.html', form=form)
+
+@app.route('/customer/delete/<int:id>')
+def delete_user(id):
+    return redirect("/customer")
 
 
 if __name__ == '__main__':
