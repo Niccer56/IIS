@@ -51,6 +51,13 @@ def delete_user(id):
         print(f"User with id: {id} has been removed from the database")
     return redirect("/customer")
 
+@app.route('/customer/changetype/<int:id>', methods=["POST"])
+def change_type(id):
+    user = User.query.filter_by(id=id).first()
+    if user is not None:
+        user.type = request.form.get("type")
+        db.session.commit()
+    return redirect("/customer")
 
 if __name__ == '__main__':
     app.run(debug=True)
