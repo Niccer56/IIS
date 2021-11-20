@@ -1,5 +1,5 @@
 from dpmb.models import db, User, UserType
-from dpmb.forms import LoginForm, RegisterForm
+from dpmb.forms import LoginForm, RegisterForm, EditForm
 from flask import render_template, flash, request, redirect
 from dpmb import app
 
@@ -27,9 +27,7 @@ def register_page():
                 flash("This email adress is already in use.")
                 return render_template('register.html', form=form)
             reg = User()
-            reg.first_name = form.first_name.data
-            reg.last_name = form.last_name.data
-            reg.email = form.email.data
+            form.populate_obj(reg)
             reg.password = form.password1.data
             reg.type = "user"
             db.session.add(reg)
@@ -58,6 +56,23 @@ def change_type(id):
         user.type = request.form.get("type")
         db.session.commit()
     return redirect("/customer")
+
+@app.route('/customer/edit/<int:id>', methods=["GET", "POST"])
+def edit_user(id):
+    user = User.query.filter_by(id=id).first()
+    form = EditForm(obj=user)
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            form.populate_obj(user)
+            if form.password1.data:
+                user.password = form.password1.data
+            db.session.commit()
+            return redirect("/customer")
+        else:
+            for err in form.errors:
+                flash(form.errors[err][0])
+    return render_template('edit.html', form=form, username=user.first_name)
+
 
 if __name__ == '__main__':
     app.run(debug=True)
