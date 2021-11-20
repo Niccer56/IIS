@@ -1,6 +1,6 @@
-from dpmb.models import db, Customer
+from dpmb.models import db, User
 from dpmb.forms import LoginForm, RegisterForm
-from flask import render_template
+from flask import render_template, flash, request, redirect
 from dpmb import app
 
 @app.route('/')
@@ -10,8 +10,8 @@ def home_page():
 
 @app.route('/customer')
 def customer_page():
-    customer = Customer.query.all()
-    return render_template('customer.html', customers=customer)
+    user = User.query.all()
+    return render_template('customer.html', customers=user)
 
 @app.route('/login')
 def login_page():
@@ -21,14 +21,21 @@ def login_page():
 @app.route('/register', methods=['GET', 'POST'])
 def register_page():
     form = RegisterForm()
-
-    if form.is_submitted():
-        reg = Customer()
-        reg.email = form.email.data
-        reg.username = form.first_name.data
-        db.session.add(reg)
-        db.session.commit()
-
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            print("hello")
+            reg = User()
+            reg.first_name = form.first_name.data
+            reg.last_name = form.last_name.data
+            reg.email = form.email.data
+            reg.password = form.password1.data
+            reg.type = "user"
+            db.session.add(reg)
+            db.session.commit()
+            return redirect("/login")
+        else:
+            for err in form.errors:
+                flash(form.errors[err][0])
     return render_template('register.html', form=form)
 
 
