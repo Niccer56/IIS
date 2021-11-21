@@ -1,7 +1,7 @@
-from dpmb.models import db, User, UserType
+from dpmb.models import db, User, Role
 from dpmb.forms import LoginForm, RegisterForm, EditForm
 from flask import render_template, flash, request, redirect
-from dpmb import app, login_manager
+from dpmb import app, login_manager, authorize
 from flask_login import login_user, login_required
 
 @login_manager.user_loader
@@ -13,11 +13,16 @@ def load_user(user_id):
 def home_page():
     return render_template('home.html')
 
-@app.route('/customer')
+@app.route('/customer', methods=['GET', 'POST'])
 @login_required
+@authorize.has_role("admin", "carrier", "staff", "user")
 def customer_page():
     user = User.query.all()
-    return render_template('customer.html', customers=user, usertype=UserType)
+    roles = Role.query.all()
+    types = []
+    for role in roles:
+        types.append(role.name)
+    return render_template('customer.html', customers=user, usertype=types)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
@@ -49,6 +54,8 @@ def register_page():
             reg.email = form.email.data.strip()
             reg.password = form.password1.data
             reg.type = "user"
+            role = Role.query.filter_by(name="user").first()
+            reg.roles = [role]
             db.session.add(reg)
             db.session.commit()
             return redirect("/login")
@@ -69,7 +76,9 @@ def delete_user(id):
 def change_type(id):
     user = User.query.filter_by(id=id).first()
     if user is not None:
-        user.type = request.form.get("type")
+        type = request.form.get("type")
+        role = Role.query.filter_by(name=type).first()
+        user.roles = [role]
         db.session.commit()
     return redirect("/customer")
 

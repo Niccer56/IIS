@@ -30,10 +30,10 @@
           <td>
             <form id="{{customer.id}}" class="select" method="POST" action="{{ url_for('change_type', id=customer.id)}}" onchange="myFunction({{customer.id}})">
               <select class="custom-select" name="type">
-                <option selected>{{customer.type.name}}</option>
+                <option selected>{{customer.roles[0].name}}</option>
                 {% for type in usertype %}
-                  {% if type != customer.type %}
-                    <option>{{type.name}}</option>
+                  {% if type != customer.roles[0].name %}
+                    <option>{{type}}</option>
                   {% endif %}
                 {% endfor %}
               </select>
