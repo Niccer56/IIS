@@ -1,7 +1,12 @@
 from dpmb.models import db, User, UserType
 from dpmb.forms import LoginForm, RegisterForm, EditForm
 from flask import render_template, flash, request, redirect
-from dpmb import app
+from dpmb import app, login_manager
+from flask_login import login_user
+
+@login_manager.user_loader
+def load_user(user_id):
+    return User.query.filter_by(id=user_id).first()
 
 @app.route('/')
 @app.route('/home')
@@ -13,9 +18,20 @@ def customer_page():
     user = User.query.all()
     return render_template('customer.html', customers=user, usertype=UserType)
 
-@app.route('/login')
+@app.route('/login', methods=['GET', 'POST'])
 def login_page():
     form = LoginForm()
+    if request.method == 'POST':
+        if form.validate_on_submit():
+            user = User.query.filter_by(email=form.email.data.strip(), password=form.password.data).first()
+            if not user:
+                flash("Invalid login credentials")
+                return render_template('login.html', form=form)
+            login_user(user)
+            return redirect("/home")
+        else:
+            for err in form.errors:
+                flash(form.errors[err][0])
     return render_template('login.html', form=form)
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -27,7 +43,9 @@ def register_page():
                 flash("This email adress is already in use.")
                 return render_template('register.html', form=form)
             reg = User()
-            form.populate_obj(reg)
+            reg.first_name = form.first_name.data.strip()
+            reg.last_name = form.last_name.data.strip()
+            reg.email = form.email.data.strip()
             reg.password = form.password1.data
             reg.type = "user"
             db.session.add(reg)
@@ -36,8 +54,6 @@ def register_page():
         else:
             for err in form.errors:
                 flash(form.errors[err][0])
-    print(dir(User.type))
-    print(User.type)
     return render_template('register.html', form=form)
 
 @app.route('/customer/delete/<int:id>')
@@ -46,7 +62,6 @@ def delete_user(id):
     if user is not None:
         db.session.delete(user)
         db.session.commit()
-        print(f"User with id: {id} has been removed from the database")
     return redirect("/customer")
 
 @app.route('/customer/changetype/<int:id>', methods=["POST"])

@@ -11,16 +11,26 @@
 
     <form method="POST" class="form-register">
 
-        {{ form.first_name.label() }}
-        {{ form.first_name(class="form-control", placeholder="Meno") }}
-        {{ form.last_name.label() }}
-        {{ form.last_name(class="form-control", placeholder="Priezvisko") }}
-        {{ form.password1.label() }}
-        {{ form.password1(class="form-control", placeholder="Heslo") }}
+        {{ form.email.label() }}
+        {{ form.email(class="form-control", placeholder="Email") }}
+        {{ form.password.label() }}
+        {{ form.password(class="form-control", placeholder="Password") }}
+        {{ form.csrf_token }}
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <br>
+            <ul class=flashes>
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
 
         {{ form.submit(class="btn btn-primary mt-4") }}
     </form>
 
     </div>
-    
+
 {% endblock mainContent %}

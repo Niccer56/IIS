@@ -14,13 +14,12 @@ class RegisterForm(FlaskForm):
     submit = SubmitField(label='Vytvoriť účet:', validators=[validators.InputRequired()])
 
 class EditForm(RegisterForm):
-    password1 = PasswordField(label='Heslo:', validators=[])
+    password1 = PasswordField(label='Heslo:')
     password2 = PasswordField(label='Potvrďte heslo:', validators=[
         validators.EqualTo("password1", message="Passwords don't match")])
     submit = SubmitField(label='Confirm', validators=[validators.InputRequired()])
 
 class LoginForm(FlaskForm):
-    first_name = StringField(label='Meno:')
-    last_name = StringField(label='Priezivko:')
-    password1 = PasswordField(label='Heslo:')
-    submit = SubmitField(label='Prihlásiť sa:')
+    email = StringField(label='Email:', validators=[validators.InputRequired()])
+    password = PasswordField(label='Password:', validators=[validators.InputRequired()])
+    submit = SubmitField(label='Sign In')

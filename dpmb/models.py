@@ -1,5 +1,6 @@
 from dpmb import db
 from enum import Enum
+from flask_login import UserMixin
 
 class UserType(Enum):
     user = 1
@@ -7,7 +8,7 @@ class UserType(Enum):
     carrier = 3
     admin = 4
 
-class User(db.Model):
+class User(db.Model, UserMixin):
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(80), nullable=False)
     last_name = db.Column(db.String(80), nullable=False)
