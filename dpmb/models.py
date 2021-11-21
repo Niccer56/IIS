@@ -1,20 +1,29 @@
 from dpmb import db
 from enum import Enum
 from flask_login import UserMixin
+from flask_authorize import AllowancesMixin
 
-class UserType(Enum):
-    user = 1
-    staff = 2
-    carrier = 3
-    admin = 4
+UserRole = db.Table(
+    'user_role', db.Model.metadata,
+    db.Column('user_id', db.Integer, db.ForeignKey('users.id')),
+    db.Column('role_id', db.Integer, db.ForeignKey('roles.id'))
+)
+
+class Role(db.Model, AllowancesMixin):
+    __tablename__ = 'roles'
+
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(255), nullable=False, unique=True)
 
 class User(db.Model, UserMixin):
+    __tablename__ = 'users'
+
     id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.String(80), nullable=False)
     last_name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False) # TODO encryption
-    type = db.Column(db.Enum(UserType), nullable=False)
+    roles = db.relationship('Role', secondary=UserRole)
 
 class Ticket(db.Model):
     id = db.Column(db.Integer, primary_key=True)
