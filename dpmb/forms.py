@@ -21,5 +21,5 @@ class EditForm(RegisterForm):
 
 class LoginForm(FlaskForm):
     email = StringField(label='Email:', validators=[validators.InputRequired()])
-    password = PasswordField(label='Password:', validators=[validators.InputRequired()])
+    password = PasswordField(label='Password:', validators=[])
     submit = SubmitField(label='Sign In')

@@ -2,7 +2,7 @@ from dpmb.models import db, User, UserType
 from dpmb.forms import LoginForm, RegisterForm, EditForm
 from flask import render_template, flash, request, redirect
 from dpmb import app, login_manager
-from flask_login import login_user
+from flask_login import login_user, login_required
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -14,6 +14,7 @@ def home_page():
     return render_template('home.html')
 
 @app.route('/customer')
+@login_required
 def customer_page():
     user = User.query.all()
     return render_template('customer.html', customers=user, usertype=UserType)
