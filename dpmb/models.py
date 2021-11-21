@@ -27,7 +27,7 @@ class User(db.Model, UserMixin):
 
 class Ticket(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    customerid = db.Column(db.Integer, db.ForeignKey("user.id"), nullable=False)
+    customerid = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     linkid = db.Column(db.Integer, db.ForeignKey("link.id"), nullable=False)
     expiration = db.Column(db.DateTime, nullable=False)
 
