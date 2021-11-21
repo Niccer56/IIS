@@ -11,18 +11,44 @@
         <tr>
           <th scope="col">#</th>
           <th scope="col">First Name</th>
+          <th scope="col">Last Name</th>
           <th scope="col">Email</th>
+          <th scope="col">Password</th>
+          <th scope="col">Type</th>
+          <th scope="col">Delete</th>
+          <th scope="col">Edit</th>
         </tr>
       </thead>
       <tbody>
-        {% for customer in customers%}
+        {% for customer in customers %}
         <tr>
           <td>{{customer.id}}</td>
-          <td>{{customer.username}}</td>
+          <td>{{customer.first_name}}</td>
+          <td>{{customer.last_name}}</td>
           <td>{{customer.email}}</td>
+          <td>{{customer.password}}</td>
+          <td>
+            <form id="{{customer.id}}" class="select" method="POST" action="{{ url_for('change_type', id=customer.id)}}" onchange="myFunction({{customer.id}})">
+              <select class="custom-select" name="type">
+                <option selected>{{customer.type.name}}</option>
+                {% for type in usertype %}
+                  {% if type != customer.type %}
+                    <option>{{type.name}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </form>
+          </td>
+          <td><a href="{{url_for('delete_user', id=customer.id)}}" class="btn btn-outline-danger">Delete</td>
+          <td><a href="{{url_for('edit_user', id=customer.id)}}" class="btn btn-outline-info">Edit</td>
         </tr>
         {% endfor %}
       </tbody>
     </table>
-    
+    <script>
+      function myFunction(id) {
+        document.getElementById(id).submit();
+      }
+    </script>
+
 {% endblock mainContent %}
