@@ -1,8 +1,11 @@
+from flask_authorize.plugin import CURRENT_USER
+from flask_login.utils import logout_user
 from dpmb.models import db, User, Role
 from dpmb.forms import LoginForm, RegisterForm, EditForm
 from flask import render_template, flash, request, redirect
 from dpmb import app, login_manager, authorize
 from flask_login import login_user, login_required
+from dpmb import bcrypt
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -29,8 +32,8 @@ def login_page():
     form = LoginForm()
     if request.method == 'POST':
         if form.validate_on_submit():
-            user = User.query.filter_by(email=form.email.data.strip(), password=form.password.data).first()
-            if not user:
+            user = User.query.filter_by(email=form.email.data.strip()).first()
+            if not user or not user.password_check(form.password.data):
                 flash("Invalid login credentials")
                 return render_template('login.html', form=form)
             login_user(user)
@@ -39,6 +42,12 @@ def login_page():
             for err in form.errors:
                 flash(form.errors[err][0])
     return render_template('login.html', form=form)
+
+@app.route('/logout', methods=['GET', 'POST'])
+def logout_page():
+    logout_user()
+    flash(f'You have been successfuly logged out !')
+    return redirect('/login')
 
 @app.route('/register', methods=['GET', 'POST'])
 def register_page():
@@ -52,8 +61,7 @@ def register_page():
             reg.first_name = form.first_name.data.strip()
             reg.last_name = form.last_name.data.strip()
             reg.email = form.email.data.strip()
-            reg.password = form.password1.data
-            reg.type = "user"
+            reg.password = bcrypt.generate_password_hash(form.password1.data)
             role = Role.query.filter_by(name="user").first()
             reg.roles = [role]
             db.session.add(reg)
@@ -63,6 +71,8 @@ def register_page():
             for err in form.errors:
                 flash(form.errors[err][0])
     return render_template('register.html', form=form)
+
+
 
 @app.route('/customer/delete/<int:id>')
 def delete_user(id):
