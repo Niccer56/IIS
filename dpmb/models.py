@@ -1,4 +1,4 @@
-from dpmb import db
+from dpmb import db, bcrypt
 from enum import Enum
 from flask_login import UserMixin
 from flask_authorize import AllowancesMixin
@@ -24,6 +24,9 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False) # TODO encryption
     roles = db.relationship('Role', secondary=UserRole)
+
+    def password_check(self, unhashed_pwd):
+        return bcrypt.check_password_hash(self.password, unhashed_pwd)
 
 class Ticket(db.Model):
     id = db.Column(db.Integer, primary_key=True)

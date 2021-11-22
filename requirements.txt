@@ -4,3 +4,4 @@ flask_login
 flask_authorize
 wtforms
 email_validator
+flask_bcrypt

@@ -1,7 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, validators
-
+from wtforms import StringField, PasswordField, SubmitField, validators, ValidationError
+from dpmb.models import User
 class RegisterForm(FlaskForm):
+
     first_name = StringField(label='Meno:', validators=[validators.InputRequired()])
     last_name = StringField(label='Priezivko:', validators=[validators.InputRequired()])
     email = StringField(label='Email:', validators=[
@@ -12,6 +13,7 @@ class RegisterForm(FlaskForm):
         validators.InputRequired(),
         validators.EqualTo("password1", message="Passwords don't match")])
     submit = SubmitField(label='Vytvoriť účet:', validators=[validators.InputRequired()])
+     
 
 class EditForm(RegisterForm):
     password1 = PasswordField(label='Heslo:')
