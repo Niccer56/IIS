@@ -1,3 +1,4 @@
+from flask_admin.contrib.sqla.view import ModelView
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, validators, ValidationError
 from dpmb.models import User
@@ -25,3 +26,6 @@ class LoginForm(FlaskForm):
     email = StringField(label='Email:', validators=[validators.InputRequired()])
     password = PasswordField(label='Password:', validators=[])
     submit = SubmitField(label='Sign In')
+
+
+
