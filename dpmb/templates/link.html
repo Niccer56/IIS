@@ -16,12 +16,12 @@
         </tr>
       </thead>
       <tbody>
-        {% set cnt = 0 %}
+        {% set cnt = namespace(value=0) %}
         {% for link in links %}
         <tr>
           <td>{{link[0]}}</td>
           <td>
-            <form id="{{cnt}}" class="select" method="POST" action="{{ url_for('change_start', id=link[0])}}" onchange="myFunction({{cnt}})">
+            <form id="{{cnt.value}}" class="select" method="POST" action="{{ url_for('change_start', id=link[0])}}" onchange="myFunction({{cnt.value}})">
               <select class="custom-select" name="start">
                 <option selected>{{link[1].name}}</option>
                 {% for station in stations %}
@@ -32,9 +32,9 @@
               </select>
             </form>
           </td>
-          {% set cnt = cnt + 1 %}
+          {% set cnt.value = cnt.value + 1 %}
           <td>
-            <form id="{{cnt}}" class="select" method="POST" action="{{ url_for('change_end', id=link[0])}}" onchange="myFunction({{cnt}})">
+            <form id="{{cnt.value}}" class="select" method="POST" action="{{ url_for('change_end', id=link[0])}}" onchange="myFunction({{cnt.value}})">
               <select class="custom-select" name="end">
                 <option selected>{{link[2].name}}</option>
                 {% for station in stations %}
@@ -45,6 +45,7 @@
               </select>
             </form>
           </td>
+          {% set cnt.value = cnt.value + 1 %}
           <td><a href="{{url_for('delete_link', id=link[0])}}" class="btn btn-outline-danger">Delete</td>
         </tr>
         {% endfor %}
