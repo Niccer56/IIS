@@ -53,11 +53,11 @@ def station_page():
 @authorize.has_role("admin", "carrier")
 def link_page():
 
-    links = Link.query.all()
-    stations = []
-    for link in links:
-        stations.append(Station.query.filter_by(id=link.id).first())
-
+    query = Link.query.all()
+    links = []
+    for link in query:
+        links.append([link.id, Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
+    stations = Station.query.all()
     return render_template('link.html', links=links, stations=stations)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -160,8 +160,18 @@ def change_start(id):
     link = Link.query.filter_by(id=id).first()
     if link is not None:
         start = request.form.get("start")
-        name = Role.query.filter_by(name=start).first()
-        link.start = [name]
+        station = Station.query.filter_by(name=start).first()
+        link.start = station.id
+        db.session.commit()
+    return redirect("/link")
+
+@app.route('/customer/changefinish/<int:id>', methods=["POST"])
+def change_end(id):
+    link = Link.query.filter_by(id=id).first()
+    if link is not None:
+        end = request.form.get("end")
+        station = Station.query.filter_by(name=end).first()
+        link.end = station.id
         db.session.commit()
     return redirect("/link")
 

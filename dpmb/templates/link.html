@@ -12,24 +12,40 @@
           <th scope="col">#</th>
           <th scope="col">Start</th>
           <th scope="col">End</th>
-          <th scope="col">Edit</th>
           <th scope="col">Delete</th>
         </tr>
       </thead>
       <tbody>
+        {% set cnt = 0 %}
         {% for link in links %}
         <tr>
-          <td>{{link.id}}</td>
-          <td>{{link.start}}</td>
-          <td>{{link.end}}</td>
+          <td>{{link[0]}}</td>
           <td>
-            <form id="{{link.id}}" class="select" method="POST" action="{{ url_for('change_start', id=link.id)}}" onchange="myFunction({{link.id}})">
+            <form id="{{cnt}}" class="select" method="POST" action="{{ url_for('change_start', id=link[0])}}" onchange="myFunction({{cnt}})">
               <select class="custom-select" name="start">
-                <option selected>{{stations[0].id}}</option>
+                <option selected>{{link[1].name}}</option>
+                {% for station in stations %}
+                  {% if station.id != link[1].id %}
+                    <option>{{station.name}}</option>
+                  {% endif %}
+                {% endfor %}
               </select>
             </form>
           </td>
-          <td><a href="{{url_for('delete_link', id=link.id)}}" class="btn btn-outline-danger">Delete</td>
+          {% set cnt = cnt + 1 %}
+          <td>
+            <form id="{{cnt}}" class="select" method="POST" action="{{ url_for('change_end', id=link[0])}}" onchange="myFunction({{cnt}})">
+              <select class="custom-select" name="end">
+                <option selected>{{link[2].name}}</option>
+                {% for station in stations %}
+                  {% if station.id != link[2].id %}
+                    <option>{{station.name}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </form>
+          </td>
+          <td><a href="{{url_for('delete_link', id=link[0])}}" class="btn btn-outline-danger">Delete</td>
         </tr>
         {% endfor %}
       </tbody>
