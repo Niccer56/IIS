@@ -12,6 +12,8 @@
           <th scope="col">#</th>
           <th scope="col">Start</th>
           <th scope="col">End</th>
+          <th scope="col">Edit</th>
+          <th scope="col">Delete</th>
         </tr>
       </thead>
       <tbody>
@@ -23,16 +25,11 @@
           <td>
             <form id="{{link.id}}" class="select" method="POST" action="{{ url_for('change_start', id=link.id)}}" onchange="myFunction({{link.id}})">
               <select class="custom-select" name="start">
-                <option selected>{{stationnames[0]}}</option>
-                {% for stationname in stationnames %}
-                  {% if stationname != stationnames[0] %}
-                    <option>{{stationname}}</option>
-                  {% endif %}
-                {% endfor %}
+                <option selected>{{stations[0].id}}</option>
               </select>
             </form>
           </td>
-          <td><a href="{{url_for('delete_link', id=link.id)}}" class="btn btn-outline-danger">Delete</td>    
+          <td><a href="{{url_for('delete_link', id=link.id)}}" class="btn btn-outline-danger">Delete</td>
         </tr>
         {% endfor %}
       </tbody>

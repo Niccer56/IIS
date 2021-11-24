@@ -1,4 +1,3 @@
-from flask_authorize.plugin import CURRENT_USER
 from flask_login.utils import logout_user
 from dpmb.models import db, User, Role, Ticket, Link, Station, Vehicle
 from dpmb.forms import LoginForm, RegisterForm, EditForm
@@ -6,8 +5,6 @@ from flask import render_template, flash, request, redirect
 from dpmb import app, login_manager, authorize
 from flask_login import login_user, login_required
 from dpmb import bcrypt
-
-        
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -27,42 +24,41 @@ def customer_page():
     types = []
     for role in roles:
         types.append(role.name)
-        
+
     return render_template('customer.html', customers=user, usertype=types)
 
 @app.route('/ticket', methods=['GET', 'POST'])
 @login_required
-@authorize.has_role("admin", "staff" )
+@authorize.has_role("admin", "staff")
 def ticket_page():
     ticket = Ticket.query.all()
     return render_template('ticket.html', tickets=ticket)
 
 @app.route('/vehicle', methods=['GET', 'POST'])
 @login_required
-@authorize.has_role("admin", "carrier" )
+@authorize.has_role("admin", "carrier")
 def vehicle_page():
     vehicle = Vehicle.query.all()
-    return render_template('vehicle.html', vehicles=vehicle)    
+    return render_template('vehicle.html', vehicles=vehicle)
 
 @app.route('/station', methods=['GET', 'POST'])
 @login_required
-@authorize.has_role("admin", "carrier" )
+@authorize.has_role("admin", "carrier")
 def station_page():
     station = Station.query.all()
-    return render_template('station.html', stations=station)    
+    return render_template('station.html', stations=station)
 
 @app.route('/link', methods=['GET', 'POST'])
 @login_required
-@authorize.has_role("admin", "carrier" )
+@authorize.has_role("admin", "carrier")
 def link_page():
-    
+
     links = Link.query.all()
     stations = []
     for link in links:
         stations.append(Station.query.filter_by(id=link.id).first())
-    
-    
-    return render_template('link.html', linkss=links, stationnames = stations)
+
+    return render_template('link.html', links=links, stations=stations)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
@@ -83,7 +79,7 @@ def login_page():
 @app.route('/logout', methods=['GET', 'POST'])
 def logout_page():
     logout_user()
-    flash(f'You have been successfuly logged out !')
+    flash('You have been successfuly logged out !')
     return redirect('/login')
 
 @app.route('/register', methods=['GET', 'POST'])
@@ -109,8 +105,6 @@ def register_page():
                 flash(form.errors[err][0])
     return render_template('register.html', form=form)
 
-
-
 @app.route('/customer/delete/<int:id>')
 def delete_user(id):
     user = User.query.filter_by(id=id).first()
@@ -125,7 +119,7 @@ def delete_station(id):
     if station is not None:
         db.session.delete(station)
         db.session.commit()
-    return redirect("/station")        
+    return redirect("/station")
 
 @app.route('/ticket/delete/<int:id>')
 def delete_ticket(id):
@@ -141,7 +135,7 @@ def delete_vehicle(id):
     if vehicle is not None:
         db.session.delete(vehicle)
         db.session.commit()
-    return redirect("/vehicle")         
+    return redirect("/vehicle")
 
 @app.route('/link/delete/<int:id>')
 def delete_link(id):
@@ -149,7 +143,7 @@ def delete_link(id):
     if link is not None:
         db.session.delete(link)
         db.session.commit()
-    return redirect("/link")      
+    return redirect("/link")
 
 @app.route('/customer/changetype/<int:id>', methods=["POST"])
 def change_type(id):
@@ -169,7 +163,7 @@ def change_start(id):
         name = Role.query.filter_by(name=start).first()
         link.start = [name]
         db.session.commit()
-    return redirect("/link")    
+    return redirect("/link")
 
 @app.route('/customer/edit/<int:id>', methods=["GET", "POST"])
 def edit_user(id):
@@ -189,10 +183,4 @@ def edit_user(id):
 
 
 if __name__ == '__main__':
-
     app.run(debug=True)
-    
-    
-    
-    
-    

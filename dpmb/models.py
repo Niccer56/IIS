@@ -1,5 +1,4 @@
 from dpmb import db, bcrypt
-from enum import Enum
 from flask_login import UserMixin
 from flask_authorize import AllowancesMixin
 
@@ -23,7 +22,7 @@ class User(db.Model, UserMixin):
     first_name = db.Column(db.String(80), nullable=False)
     last_name = db.Column(db.String(80), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False)
-    password = db.Column(db.String(80), nullable=False) # TODO encryption
+    password = db.Column(db.String(80), nullable=False)
     roles = db.relationship('Role', secondary=UserRole)
 
     def password_check(self, unhashed_pwd):

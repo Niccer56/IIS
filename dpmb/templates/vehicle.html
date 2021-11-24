@@ -12,6 +12,7 @@
           <th scope="col">#</th>
           <th scope="col">Link#</th>
           <th scope="col">Current Station</th>
+          <th scope="col">Delete</th>
         </tr>
       </thead>
       <tbody>
@@ -20,8 +21,8 @@
           <td>{{vehicle.id}}</td>
           <td>{{vehicle.linkid}}</td>
           <td>{{vehicle.current_station}}</td>
-          
-          <td><a href="{{url_for('delete_vehicle', id=vehicle.id)}}" class="btn btn-outline-danger">Delete</td>    
+
+          <td><a href="{{url_for('delete_vehicle', id=vehicle.id)}}" class="btn btn-outline-danger">Delete</td>
         </tr>
         {% endfor %}
       </tbody>
