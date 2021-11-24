@@ -56,7 +56,7 @@ def link_page():
     query = Link.query.all()
     links = []
     for link in query:
-        links.append([link.id, Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
+        links.append([link, Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
     stations = Station.query.all()
     return render_template('link.html', links=links, stations=stations)
 
