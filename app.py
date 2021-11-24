@@ -27,6 +27,7 @@ def customer_page():
     types = []
     for role in roles:
         types.append(role.name)
+        
     return render_template('customer.html', customers=user, usertype=types)
 
 @app.route('/ticket', methods=['GET', 'POST'])
@@ -54,8 +55,14 @@ def station_page():
 @login_required
 @authorize.has_role("admin", "carrier" )
 def link_page():
-    link = Link.query.all()
-    return render_template('link.html', links=link)
+    
+    links = Link.query.all()
+    stations = []
+    for link in links:
+        stations.append(Station.query.filter_by(id=link.id).first())
+    
+    
+    return render_template('link.html', linkss=links, stationnames = stations)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
@@ -154,6 +161,16 @@ def change_type(id):
         db.session.commit()
     return redirect("/customer")
 
+@app.route('/customer/changestart/<int:id>', methods=["POST"])
+def change_start(id):
+    link = Link.query.filter_by(id=id).first()
+    if link is not None:
+        start = request.form.get("start")
+        name = Role.query.filter_by(name=start).first()
+        link.start = [name]
+        db.session.commit()
+    return redirect("/link")    
+
 @app.route('/customer/edit/<int:id>', methods=["GET", "POST"])
 def edit_user(id):
     user = User.query.filter_by(id=id).first()
@@ -172,4 +189,10 @@ def edit_user(id):
 
 
 if __name__ == '__main__':
+
     app.run(debug=True)
+    
+    
+    
+    
+    

@@ -5,7 +5,7 @@
 {% endblock title %}
 
 {% block mainContent %}
-    <h1>Prehľad lístkov v DPMB</h1>
+    <h1>Prehľad spojení v DPMB</h1>
     <table class="table table-striped table-dark">
       <thead>
         <tr>
@@ -20,7 +20,18 @@
           <td>{{link.id}}</td>
           <td>{{link.start}}</td>
           <td>{{link.end}}</td>
-          
+          <td>
+            <form id="{{link.id}}" class="select" method="POST" action="{{ url_for('change_start', id=link.id)}}" onchange="myFunction({{link.id}})">
+              <select class="custom-select" name="start">
+                <option selected>{{stationnames[0]}}</option>
+                {% for stationname in stationnames %}
+                  {% if stationname != stationnames[0] %}
+                    <option>{{stationname}}</option>
+                  {% endif %}
+                {% endfor %}
+              </select>
+            </form>
+          </td>
           <td><a href="{{url_for('delete_link', id=link.id)}}" class="btn btn-outline-danger">Delete</td>    
         </tr>
         {% endfor %}
