@@ -16,8 +16,8 @@ def home_page():
     return render_template('home.html')
 
 @app.route('/customer', methods=['GET', 'POST'])
-@login_required
-@authorize.has_role("admin")
+#@login_required
+#@authorize.has_role("admin")
 def customer_page():
     user = User.query.all()
     roles = Role.query.all()
@@ -28,53 +28,34 @@ def customer_page():
     return render_template('customer.html', customers=user, usertype=types)
 
 @app.route('/ticket', methods=['GET', 'POST'])
-@login_required
-@authorize.has_role("admin", "staff")
+#@login_required
+#@authorize.has_role("admin", "staff")
 def ticket_page():
     query = Ticket.query.all()
     tickets = []
     for ticket in query:
         link = Link.query.filter_by(id=ticket.linkid).first()
-        tickets.append([ticket, User.query.filter_by(id=ticket.customerid).first(), Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])    
+        tickets.append([ticket, User.query.filter_by(id=ticket.customerid).first(), Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
     return render_template('ticket.html', tickets=tickets)
 
-@app.route('/vehicle', methods=['GET', 'POST'])
-@login_required
-@authorize.has_role("admin", "carrier")
+@app.route('/vehicle', methods=['GET'])
+#@login_required
+#@authorize.has_role("admin", "carrier")
 def vehicle_page():
-    
-    vehicle = Vehicle.query.all()
     form = VehicleForm()
-    if request.method == 'POST':
-        
-        data = Vehicle()
-        vehicle.vehicle_name = form.vehicle_name.data.strip()
-        '''data.current_station = form.current_station.data'''
-        db.session.commit()
-        return redirect("/vehicle")
-       
+    vehicle = Vehicle.query.all()
     return render_template('vehicle.html', vehicles=vehicle, form=form)
 
-def edit_user(id):
-    vehicle = User.query.filter_by(id=id).first()
-    form = VehicleForm()
-    if request.method == 'POST':
-        form.populate_obj(vehicle)
-        if form.password1.data:
-            vehicle.password = form.vehicle_name
-        db.session.commit()
-        return redirect("/customer")
-
 @app.route('/station', methods=['GET', 'POST'])
-@login_required
-@authorize.has_role("admin", "carrier")
+#@login_required
+#@authorize.has_role("admin", "carrier")
 def station_page():
     station = Station.query.all()
     return render_template('station.html', stations=station)
 
 @app.route('/link', methods=['GET', 'POST'])
-@login_required
-@authorize.has_role("admin", "carrier")
+#@login_required
+#@authorize.has_role("admin", "carrier")
 def link_page():
 
     query = Link.query.all()
@@ -223,9 +204,26 @@ def edit_station(id):
         form.populate_obj(station)
         db.session.commit()
         return redirect("/station")
-        
+
     return render_template('edit_station.html', form=form, station_name=station.name)
 
+@app.route('/vehicle/edit_vehicle/<string:type>', methods=['POST'])
+def edit_vehicle(type):
+    form = VehicleForm()
+    if request.method == 'POST':
+        if type == "add":
+            data = Vehicle()
+            data.vehicle_name = form.vehicle_name.data.strip()
+            db.session.add(data)
+            db.session.commit()
+            return redirect("/vehicle")
+        elif type == "edit":
+            id = 1
+            toedit = Vehicle.query.filter_by(id=id).first()
+            toedit.vehicle_name = form.vehicle_name.data.strip()
+            db.session.commit()
+            return redirect("/vehicle")
 
-if __name__ == '__main__':      
+
+if __name__ == '__main__':
     app.run(debug=True)

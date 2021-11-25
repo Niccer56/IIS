@@ -14,7 +14,7 @@ class RegisterForm(FlaskForm):
         validators.InputRequired(),
         validators.EqualTo("password1", message="Passwords don't match")])
     submit = SubmitField(label='Vytvoriť účet:', validators=[validators.InputRequired()])
-     
+
 class EditForm(RegisterForm):
     password1 = PasswordField(label='Heslo:')
     password2 = PasswordField(label='Potvrďte heslo:', validators=[
@@ -30,12 +30,6 @@ class StationForm(FlaskForm):
     name = StringField(label='Zastávka:', validators=[validators.InputRequired()])
     submit = SubmitField(label='Confirm', validators=[validators.InputRequired()])
 class VehicleForm(FlaskForm):
-
     vehicle_name = StringField(label='Vehicle Name: ', validators=[validators.InputRequired()])
     '''current_station = SelectField(u'Current Station: ',choices=Station.getAllStationNames(), validators=[validators.InputRequired()])'''
     submit = SubmitField(label='Submit', validators=[validators.InputRequired()])
-
-
-
-
-

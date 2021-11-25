@@ -46,13 +46,13 @@
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-          <form method="POST" class="form-register">
+          <form action="/vehicle/edit_vehicle/add" method="POST" class="form-register">
             <div class="modal-body">
-              
+
               {{ form.vehicle_name.label() }}
               {{ form.vehicle_name(class="form-control", placeholder="Vehicle Name") }}
 
-              {# {{ form.current_station.label() }} {{ form.current_station(class="form-control") }} #}          
+              {# {{ form.current_station.label() }} {{ form.current_station(class="form-control") }} #}
 
             </div>
             <div class="modal-footer text-left">
@@ -72,13 +72,14 @@
                 <span aria-hidden="true">&times;</span>
               </button>
             </div>
-          <form method="POST" class="form-register">
+          <form action="/vehicle/edit_vehicle/edit" method="POST" class="form-register">
             <div class="modal-body">
-              
+
               {{ form.vehicle_name.label() }}
+
               {{ form.vehicle_name(class="form-control", placeholder="Vehicle Name") }}
 
-              {# {{ form.current_station.label() }} {{ form.current_station(class="form-control") }} #}          
+              {# {{ form.current_station.label() }} {{ form.current_station(class="form-control") }} #}
 
             </div>
             <div class="modal-footer text-left">
@@ -91,8 +92,8 @@
 
 
     </div>
-    
-    
+
+
     <script>
       function myFunction(id) {
         document.getElementById(id).submit();
@@ -104,16 +105,14 @@
         border-collapse: collapse;
         border-radius: 10px;
         border-style: hidden; /* hide standard table (collapsed) border */
-        box-shadow: 0 0 0 1px #666; /* this draws the table border  */ 
+        box-shadow: 0 0 0 1px #666; /* this draws the table border  */
       }
 
       td {
           border: 1px solid #ccc;
       }
 
-      
+
     </style>
 
 {% endblock mainContent %}
-
-
