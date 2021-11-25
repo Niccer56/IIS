@@ -5,31 +5,105 @@
 {% endblock title %}
 
 {% block mainContent %}
-    <h1>Prehľad zastávok v DPMB</h1>
-    <table class="table table-striped table-dark">
-      <thead>
-        <tr>
-          <th scope="col">#</th>
-          <th scope="col">Name</th>
-          <th scope="col">Delete</th>
-        </tr>
-      </thead>
-      <tbody>
-        {% for station in stations %}
-        <tr>
-          <td>{{station.id}}</td>
-          <td>{{station.name}}</td>
-
-          <td><a href="{{url_for('delete_station', id=station.id)}}" class="btn btn-outline-danger">Delete</td>
-          <td><a href="{{url_for('edit_station', id=station.id)}}" class="btn btn-outline-info">Edit</td>  
-        </tr>
+    <h1 class="text-center mt-4 mb-4">Prehľad zastávok v DPMB</h1>
+    <div class="row justify-content-end">
+      <button class="btn btn-success mb-2" style="border-radius: 10px;" data-toggle="modal" data-target="#addStation"><i class="fas fa-plus-circle"></i> Add Station</button>
+      
+      <table class="table table-striped table-dark">
+        <thead>
+          <tr>
+            <th scope="col">#</th>
+            <th scope="col">Name</th>
+            <th scope="col">Delete</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for station in stations %}
+          <tr>
+            <td>{{station.id}}</td>
+            <td>{{station.name}}</td>
+            <td>
+              <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editStation"><i class="fas fa-edit"></i></button>
+              <a href="{{url_for('delete_station', id=station.id)}}" class="btn btn-danger"><i class="fas fa-trash"></i>
+            </td>
+          </tr>
         {% endfor %}
       </tbody>
     </table>
+    <!--ADD STATION-->
+    <div class="modal fade" id="addStation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add Station</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        <form action="/station/edit_station/add" method="POST" class="form-register">
+          <div class="modal-body">
+
+            {{ form.name.label() }}
+            {{ form.name(class="form-control", placeholder="Station Name") }}
+
+      
+
+          </div>
+          <div class="modal-footer text-left">
+            {{ form.submit(class="btn btn-primary mt-4") }}
+          </div>
+        </form>
+        </div>
+      </div>
+    </div>
+    <!--Edit STATION-->
+    <div class="modal fade" id="editStation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Edit Station</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        <form action="/station/edit_station/edit" method="POST" class="form-register">
+          <div class="modal-body">
+
+            {{ form.name.label() }}
+
+            {{ form.name(class="form-control", placeholder="Station Name") }}
+
+
+          </div>
+          <div class="modal-footer text-left">
+            {{ form.submit(class="btn btn-primary mt-4") }}
+          </div>
+        </form>
+        </div>
+      </div>
+    </div>
+
+
+  </div>
     <script>
       function myFunction(id) {
         document.getElementById(id).submit();
       }
     </script>
+    <style>
+
+      table {
+        border-collapse: collapse;
+        border-radius: 10px;
+        border-style: hidden; /* hide standard table (collapsed) border */
+        box-shadow: 0 0 0 1px #666; /* this draws the table border  */
+      }
+
+      td {
+          border: 1px solid #ccc;
+      }
+
+
+    </style>
 
 {% endblock mainContent %}

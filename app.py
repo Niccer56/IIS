@@ -51,8 +51,9 @@ def vehicle_page():
 #@login_required
 #@authorize.has_role("admin", "carrier")
 def station_page():
+    form = StationForm()
     station = Station.query.all()
-    return render_template('station.html', stations=station)
+    return render_template('station.html', stations=station, form=form)
 
 @app.route('/link', methods=['GET', 'POST'])
 #@login_required
@@ -197,16 +198,22 @@ def edit_user(id):
                 flash(form.errors[err][0])
     return render_template('edit.html', form=form, username=user.first_name)
 
-@app.route('/station/edit_station/<int:id>', methods=["GET", "POST"])
-def edit_station(id):
-    station = Station.query.filter_by(id=id).first()
-    form = StationForm(obj=station)
+@app.route('/station/edit_station/<string:type>', methods=['POST'])
+def edit_station(type):
+    form = StationForm()
     if request.method == 'POST':
-        form.populate_obj(station)
-        db.session.commit()
-        return redirect("/station")
-
-    return render_template('edit_station.html', form=form, station_name=station.name)
+        if type == "add":
+            data = Station()
+            data.name = form.name.data.strip()
+            db.session.add(data)
+            db.session.commit()
+            return redirect("/station")
+        elif type == "edit":
+            id = 1
+            toedit = Station.query.filter_by(id=id).first()
+            toedit.name = form.name.data.strip()
+            db.session.commit()
+            return redirect("/station")
 
 @app.route('/vehicle/edit_vehicle/<string:type>', methods=['POST'])
 def edit_vehicle(type):
