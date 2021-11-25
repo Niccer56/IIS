@@ -42,8 +42,12 @@ class Station(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
 
-    '''def getAllStationNames():
-        return Station.query.with_entities(Station.id,Station.name)'''
+    def getAllStationNames():
+        query = Station.query.all()
+        names = []
+        for station in query:
+            names.append(station.name)
+        return names
 
 class Link(db.Model):
     __tablename__ = 'link'
@@ -61,4 +65,3 @@ class Vehicle(db.Model):
     vehicle_name = db.Column(db.String(256))
     owner = db.Column(db.Integer, db.ForeignKey("users.id"))
     current_station = db.Column(db.Integer, db.ForeignKey("station.id"))
-

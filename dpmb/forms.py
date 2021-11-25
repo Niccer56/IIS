@@ -29,7 +29,8 @@ class LoginForm(FlaskForm):
 class StationForm(FlaskForm):
     name = StringField(label='Zastávka:', validators=[validators.InputRequired()])
     submit = SubmitField(label='Confirm', validators=[validators.InputRequired()])
+
 class VehicleForm(FlaskForm):
     vehicle_name = StringField(label='Vehicle Name: ', validators=[validators.InputRequired()])
-    '''current_station = SelectField(u'Current Station: ',choices=Station.getAllStationNames(), validators=[validators.InputRequired()])'''
+    current_station = SelectField(u'Current Station: ', choices=Station.getAllStationNames(), validators=[validators.InputRequired()])
     submit = SubmitField(label='Submit', validators=[validators.InputRequired()])

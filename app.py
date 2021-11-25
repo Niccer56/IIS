@@ -19,6 +19,7 @@ def home_page():
 #@login_required
 #@authorize.has_role("admin")
 def customer_page():
+    #User.query.join(User.roles).filter_by(name="carrier").all()
     user = User.query.all()
     roles = Role.query.all()
     types = []
