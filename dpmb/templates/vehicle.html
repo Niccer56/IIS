@@ -21,9 +21,11 @@
           </tr>
         </thead>
         <tbody>
+          {% set cnt = namespace(value=0) %}
           {% for vehicle in vehicles %}
+          {% set cnt.value = cnt.value + 1 %}
           <tr>
-            <td>{{vehicle.id}}</td>
+            <td>{{cnt.value}}</td>
             <td>{{vehicle.current_station}}</td>
             <td>{{vehicle.current_station}}</td>
             <td>{{vehicle.vehicle_name}}</td>

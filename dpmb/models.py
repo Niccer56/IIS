@@ -28,6 +28,13 @@ class User(db.Model, UserMixin):
     def password_check(self, unhashed_pwd):
         return bcrypt.check_password_hash(self.password, unhashed_pwd)
 
+    def getAllEmails():
+        query = User.query.all()
+        names = []
+        for user in query:
+            names.append(user.email)
+        return names    
+
 class Ticket(db.Model):
     __tablename__ = 'ticket'
 
@@ -57,6 +64,15 @@ class Link(db.Model):
     start = db.Column(db.Integer, db.ForeignKey("station.id"), nullable=False)
     end = db.Column(db.Integer, db.ForeignKey("station.id"), nullable=False)
 
+    def getAllLinks():
+        query = Link.query.all()
+        
+        links = []
+        for link in query:
+            names = []
+            names.append([Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()]) 
+            links.append (f"{link.id} {names[0][0].name}-{names[0][1].name}")
+        return links
 class Vehicle(db.Model):
     __tablename__ = 'vehicle'
 

@@ -14,22 +14,77 @@
           <tr>
             <th scope="col">#</th>
             <th scope="col">Name</th>
-            <th scope="col">Delete</th>
+            <th scope="col">Actions</th>
           </tr>
         </thead>
         <tbody>
+          {% set cnt = namespace(value=0) %}
           {% for station in stations %}
+          {% set cnt.value = cnt.value + 1 %}
           <tr>
-            <td>{{station.id}}</td>
+            <td>{{cnt.value}}</td>
             <td>{{station.name}}</td>
             <td>
-              <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editStation"><i class="fas fa-edit"></i></button>
-              <a href="{{url_for('delete_station', id=station.id)}}" class="btn btn-danger"><i class="fas fa-trash"></i>
+              <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editStation{{station.id}}"><i class="fas fa-edit"></i></button>
+              <button class="btn btn-danger" data-toggle="modal" data-target="#deleteStation{{station.id}}"><i class="fas fa-trash"></i></button>
             </td>
+            <!--Edit STATION-->
+            <div class="modal fade" id="editStation{{station.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Station</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                <form action="/station/edit_station/edit" method="POST" class="form-register">
+                  <div class="modal-body">
+
+                    <input type="hidden" name="id" value={{ station.id }}>
+
+                    {{ form.name.label() }}
+
+                    {{ form.name(class="form-control", placeholder="Station Name", value=station.name) }}
+
+                  </div>
+                  <div class="modal-footer text-left">
+                    {{ form.submit(class="btn btn-primary mt-4") }}
+                  </div>
+                </form>
+                </div>
+              </div>
+            </div>
+            
+            <!--Delete Station-->
+            <div class="modal fade" id="deleteStation{{station.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Delete Station</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                <form action="/station/edit_station/delete" method="POST" class="form-register">
+                  <div class="modal-body">
+                    <input type="hidden" name="id" value={{ station.id }}>
+                    <div class="text-left">
+                      <h5>Are you sure to delete station {{station.name}}</h5>
+                      {{ form.submit(class="btn btn-primary mt-4") }}
+                    </div>
+                  </div>
+                
+                </form>
+                </div>
+              </div>
+            </div>
+
+
           </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+          {% endfor %}
+        </tbody>
+      </table>            
     <!--ADD STATION-->
     <div class="modal fade" id="addStation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
@@ -56,35 +111,9 @@
         </div>
       </div>
     </div>
-    <!--Edit STATION-->
-    <div class="modal fade" id="editStation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-      <div class="modal-dialog" role="document">
-        <div class="modal-content">
-          <div class="modal-header">
-            <h5 class="modal-title" id="exampleModalLabel">Edit Station</h5>
-            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-              <span aria-hidden="true">&times;</span>
-            </button>
-          </div>
-        <form action="/station/edit_station/edit" method="POST" class="form-register">
-          <div class="modal-body">
-
-            {{ form.name.label() }}
-
-            {{ form.name(class="form-control", placeholder="Station Name") }}
-
-
-          </div>
-          <div class="modal-footer text-left">
-            {{ form.submit(class="btn btn-primary mt-4") }}
-          </div>
-        </form>
-        </div>
-      </div>
-    </div>
-
 
   </div>
+
     <script>
       function myFunction(id) {
         document.getElementById(id).submit();

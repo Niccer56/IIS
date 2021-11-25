@@ -1,6 +1,6 @@
 from flask_login.utils import logout_user
 from dpmb.models import db, User, Role, Ticket, Link, Station, Vehicle
-from dpmb.forms import LoginForm, RegisterForm, EditForm, VehicleForm, StationForm
+from dpmb.forms import LoginForm, RegisterForm, EditForm, VehicleForm, StationForm, TicketForm
 from flask import render_template, flash, request, redirect
 from dpmb import app, login_manager, authorize
 from flask_login import login_user, login_required
@@ -32,12 +32,13 @@ def customer_page():
 #@login_required
 #@authorize.has_role("admin", "staff")
 def ticket_page():
+    form = TicketForm()
     query = Ticket.query.all()
     tickets = []
     for ticket in query:
         link = Link.query.filter_by(id=ticket.linkid).first()
         tickets.append([ticket, User.query.filter_by(id=ticket.customerid).first(), Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
-    return render_template('ticket.html', tickets=tickets)
+    return render_template('ticket.html', tickets=tickets, form=form)
 
 @app.route('/vehicle', methods=['GET'])
 #@login_required
@@ -120,29 +121,11 @@ def delete_user(id):
         db.session.commit()
     return redirect("/customer")
 
-@app.route('/station/delete/<int:id>')
-def delete_station(id):
-    station = Station.query.filter_by(id=id).first()
-    if station is not None:
-        db.session.delete(station)
-        db.session.commit()
-    return redirect("/station")
 
-@app.route('/ticket/delete/<int:id>')
-def delete_ticket(id):
-    ticket = Ticket.query.filter_by(id=id).first()
-    if ticket is not None:
-        db.session.delete(ticket)
-        db.session.commit()
-    return redirect("/ticket")
 
-@app.route('/vehicle/delete/<int:id>')
-def delete_vehicle(id):
-    vehicle = Vehicle.query.filter_by(id=id).first()
-    if vehicle is not None:
-        db.session.delete(vehicle)
-        db.session.commit()
-    return redirect("/vehicle")
+
+
+
 
 @app.route('/link/delete/<int:id>')
 def delete_link(id):
@@ -209,11 +192,38 @@ def edit_station(type):
             db.session.commit()
             return redirect("/station")
         elif type == "edit":
-            id = 1
-            toedit = Station.query.filter_by(id=id).first()
-            toedit.name = form.name.data.strip()
+        
+            toedit = Station.query.filter_by(id=form.id.data).first()
+            toedit.name = form.name.data
             db.session.commit()
             return redirect("/station")
+        elif type == "delete":
+            station = Station.query.filter_by(id=form.id.data).first()
+            if station is not None:
+                db.session.delete(station)
+                db.session.commit()
+                return redirect("/station")
+
+@app.route('/ticket/edit_ticket/<string:type>', methods=['POST'])
+def edit_ticket(type):
+    form = TicketForm()
+    if request.method == 'POST':
+        if type == "add":
+            data = Ticket()
+            db.session.add(data)
+            db.session.commit()
+            return redirect("/ticket")
+        elif type == "edit":
+        
+            db.session.commit()
+            return redirect("/ticket")
+        elif type == "delete":
+            ticket = Ticket.query.filter_by(id=form.id.data).first()
+            if ticket is not None:
+                db.session.delete(ticket)
+                db.session.commit()
+                return redirect("/ticket")
+
 
 @app.route('/vehicle/edit_vehicle/<string:type>', methods=['POST'])
 def edit_vehicle(type):
@@ -240,4 +250,5 @@ def edit_vehicle(type):
 
 
 if __name__ == '__main__':
+     
     app.run(debug=True)
