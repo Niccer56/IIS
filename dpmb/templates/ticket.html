@@ -10,7 +10,7 @@
       <thead>
         <tr>
           <th scope="col">#</th>
-          <th scope="col">Customer#</th>
+          <th scope="col">User email</th>
           <th scope="col">Link#</th>
           <th scope="col">Expiration</th>
           <th scope="col">Delete</th>
@@ -19,12 +19,12 @@
       <tbody>
         {% for ticket in tickets %}
         <tr>
-          <td>{{ticket.id}}</td>
-          <td>{{ticket.customerid}}</td>
-          <td>{{ticket.linkid}}</td>
-          <td>{{ticket.expiration}}</td>
+          <td>{{ticket[0].id}}</td>
+          <td>{{ticket[1].email}}</td>
+          <td>{{ticket[2].name +"-" + ticket[3].name}}</td>
+          <td>{{ticket[0].expiration}}</td>
 
-          <td><a href="{{url_for('delete_ticket', id=ticket.id)}}" class="btn btn-outline-danger">Delete</td>
+          <td><a href="{{url_for('delete_ticket', id=ticket[0].id)}}" class="btn btn-outline-danger">Delete</td>
         </tr>
         {% endfor %}
       </tbody>

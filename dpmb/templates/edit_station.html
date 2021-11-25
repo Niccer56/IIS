@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Station Edit
+{% endblock title %}
+
+{% block mainContent %}
+
+    <div class="container mt-4">
+
+    <h1 class="text-center mt-4 mb-4">Edit of station {{station_name}}</h1>
+
+    <form method="POST" class="form-register">
+
+        {{ form.name.label() }}
+        {{ form.name(class="form-control", placeholder="Názov zastávky") }}
+
+        {% with messages = get_flashed_messages() %}
+          {% if messages %}
+            <br>
+            <ul class=flashes>
+            {% for message in messages %}
+              <li>{{ message }}</li>
+            {% endfor %}
+            </ul>
+          {% endif %}
+        {% endwith %}
+        {% block body %}{% endblock %}
+
+        {{ form.submit(class="btn btn-primary mt-4") }}
+    </form>
+
+    </div>
+
+
+{% endblock mainContent %}

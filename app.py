@@ -1,6 +1,6 @@
 from flask_login.utils import logout_user
 from dpmb.models import db, User, Role, Ticket, Link, Station, Vehicle
-from dpmb.forms import LoginForm, RegisterForm, EditForm, VehicleForm
+from dpmb.forms import LoginForm, RegisterForm, EditForm, VehicleForm, StationForm
 from flask import render_template, flash, request, redirect
 from dpmb import app, login_manager, authorize
 from flask_login import login_user, login_required
@@ -31,8 +31,12 @@ def customer_page():
 @login_required
 @authorize.has_role("admin", "staff")
 def ticket_page():
-    ticket = Ticket.query.all()
-    return render_template('ticket.html', tickets=ticket)
+    query = Ticket.query.all()
+    tickets = []
+    for ticket in query:
+        link = Link.query.filter_by(id=ticket.linkid).first()
+        tickets.append([ticket, User.query.filter_by(id=ticket.customerid).first(), Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])    
+    return render_template('ticket.html', tickets=tickets)
 
 @app.route('/vehicle', methods=['GET', 'POST'])
 @login_required
@@ -211,6 +215,17 @@ def edit_user(id):
                 flash(form.errors[err][0])
     return render_template('edit.html', form=form, username=user.first_name)
 
+@app.route('/station/edit_station/<int:id>', methods=["GET", "POST"])
+def edit_station(id):
+    station = Station.query.filter_by(id=id).first()
+    form = StationForm(obj=station)
+    if request.method == 'POST':
+        form.populate_obj(station)
+        db.session.commit()
+        return redirect("/station")
+        
+    return render_template('edit_station.html', form=form, station_name=station.name)
 
-if __name__ == '__main__':
+
+if __name__ == '__main__':      
     app.run(debug=True)

@@ -26,6 +26,9 @@ class LoginForm(FlaskForm):
     password = PasswordField(label='Password:', validators=[])
     submit = SubmitField(label='Sign In')
 
+class StationForm(FlaskForm):
+    name = StringField(label='Zastávka:', validators=[validators.InputRequired()])
+    submit = SubmitField(label='Confirm', validators=[validators.InputRequired()])
 class VehicleForm(FlaskForm):
 
     vehicle_name = StringField(label='Vehicle Name: ', validators=[validators.InputRequired()])
