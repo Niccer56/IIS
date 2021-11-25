@@ -42,6 +42,9 @@ class Station(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
 
+    '''def getAllStationNames():
+        return Station.query.with_entities(Station.id,Station.name)'''
+
 class Link(db.Model):
     __tablename__ = 'link'
 
@@ -54,5 +57,8 @@ class Vehicle(db.Model):
     __tablename__ = 'vehicle'
 
     id = db.Column(db.Integer, primary_key=True)
-    linkid = db.Column(db.Integer, db.ForeignKey("link.id"), nullable=False)
-    current_station = db.Column(db.Integer, db.ForeignKey("station.id"), nullable=False)
+    linkid = db.Column(db.Integer, db.ForeignKey("link.id"))
+    vehicle_name = db.Column(db.String(256))
+    owner = db.Column(db.Integer, db.ForeignKey("users.id"))
+    current_station = db.Column(db.Integer, db.ForeignKey("station.id"))
+

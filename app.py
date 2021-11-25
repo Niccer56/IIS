@@ -1,6 +1,6 @@
 from flask_login.utils import logout_user
 from dpmb.models import db, User, Role, Ticket, Link, Station, Vehicle
-from dpmb.forms import LoginForm, RegisterForm, EditForm
+from dpmb.forms import LoginForm, RegisterForm, EditForm, VehicleForm
 from flask import render_template, flash, request, redirect
 from dpmb import app, login_manager, authorize
 from flask_login import login_user, login_required
@@ -38,8 +38,28 @@ def ticket_page():
 @login_required
 @authorize.has_role("admin", "carrier")
 def vehicle_page():
+    
     vehicle = Vehicle.query.all()
-    return render_template('vehicle.html', vehicles=vehicle)
+    form = VehicleForm()
+    if request.method == 'POST':
+        
+        data = Vehicle()
+        vehicle.vehicle_name = form.vehicle_name.data.strip()
+        '''data.current_station = form.current_station.data'''
+        db.session.commit()
+        return redirect("/vehicle")
+       
+    return render_template('vehicle.html', vehicles=vehicle, form=form)
+
+def edit_user(id):
+    vehicle = User.query.filter_by(id=id).first()
+    form = VehicleForm()
+    if request.method == 'POST':
+        form.populate_obj(vehicle)
+        if form.password1.data:
+            vehicle.password = form.vehicle_name
+        db.session.commit()
+        return redirect("/customer")
 
 @app.route('/station', methods=['GET', 'POST'])
 @login_required
