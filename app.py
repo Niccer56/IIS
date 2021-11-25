@@ -226,11 +226,17 @@ def edit_vehicle(type):
             db.session.commit()
             return redirect("/vehicle")
         elif type == "edit":
-            id = 1
-            toedit = Vehicle.query.filter_by(id=id).first()
-            toedit.vehicle_name = form.vehicle_name.data.strip()
+            
+            toedit = Vehicle.query.filter_by(id=form.id.data).first()
+            toedit.vehicle_name = form.vehicle_name.data
             db.session.commit()
             return redirect("/vehicle")
+        elif type == "delete":
+            vehicle = Vehicle.query.filter_by(id=form.id.data).first()
+            if vehicle is not None:
+                db.session.delete(vehicle)
+                db.session.commit()
+                return redirect("/vehicle")
 
 
 if __name__ == '__main__':

@@ -1,6 +1,7 @@
 from flask_admin.contrib.sqla.view import ModelView
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, validators, ValidationError, SelectField
+from wtforms.fields.simple import HiddenField
 from dpmb.models import User, Vehicle, Station
 class RegisterForm(FlaskForm):
 
@@ -31,6 +32,7 @@ class StationForm(FlaskForm):
     submit = SubmitField(label='Confirm', validators=[validators.InputRequired()])
 
 class VehicleForm(FlaskForm):
+    id = HiddenField()
     vehicle_name = StringField(label='Vehicle Name: ', validators=[validators.InputRequired()])
     current_station = SelectField(u'Current Station: ', choices=Station.getAllStationNames(), validators=[validators.InputRequired()])
     submit = SubmitField(label='Submit', validators=[validators.InputRequired()])

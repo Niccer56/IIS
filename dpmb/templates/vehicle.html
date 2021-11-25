@@ -29,9 +29,64 @@
             <td>{{vehicle.vehicle_name}}</td>
             <td>{{vehicle.owner}}</td>
             <td>
-              <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editVehicle"><i class="fas fa-edit"></i></button>
-              <a href="{{url_for('delete_vehicle', id=vehicle.id)}}" class="btn btn-danger"><i class="fas fa-trash"></i>
+              <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editVehicle{{vehicle.id}}"><i class="fas fa-edit"></i></button>
+              <button class="btn btn-danger" data-toggle="modal" data-target="#deleteVehicle{{vehicle.id}}"><i class="fas fa-trash"></i></button>
             </td>
+            <!--Edit VEHICLE-->
+            <div class="modal fade" id="editVehicle{{vehicle.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Vehicle</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                <form action="/vehicle/edit_vehicle/edit" method="POST" class="form-register">
+                  <div class="modal-body">
+
+                    <input type="hidden" name="id" value={{ vehicle.id }}>
+
+                    {{ form.vehicle_name.label() }}
+
+                    {{ form.vehicle_name(class="form-control", placeholder="Vehicle Name", value=vehicle.vehicle_name) }}
+
+                    {# {{ form.current_station.label() }} {{ form.current_station(class="form-control") }} #}
+
+                  </div>
+                  <div class="modal-footer text-left">
+                    {{ form.submit(class="btn btn-primary mt-4") }}
+                  </div>
+                </form>
+                </div>
+              </div>
+            </div>
+
+            <!--Delete VEHICLE-->
+            <div class="modal fade" id="deleteVehicle{{vehicle.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Delete Vehicle</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                <form action="/vehicle/edit_vehicle/delete" method="POST" class="form-register">
+                  <div class="modal-body">
+                    <input type="hidden" name="id" value={{ vehicle.id }}>
+                    <div class="text-left">
+                      <h5>Are you sure to delete vehicle {{vehicle.vehicle_name}}</h5>
+                      {{ form.submit(class="btn btn-primary mt-4") }}
+                    </div>
+                  </div>
+                
+                </form>
+                </div>
+              </div>
+            </div>
+
+
           </tr>
           {% endfor %}
         </tbody>
@@ -62,34 +117,6 @@
           </div>
         </div>
       </div>
-      <!--Edit VEHICLE-->
-      <div class="modal fade" id="editVehicle" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-          <div class="modal-content">
-            <div class="modal-header">
-              <h5 class="modal-title" id="exampleModalLabel">Edit Vehicle</h5>
-              <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                <span aria-hidden="true">&times;</span>
-              </button>
-            </div>
-          <form action="/vehicle/edit_vehicle/edit" method="POST" class="form-register">
-            <div class="modal-body">
-
-              {{ form.vehicle_name.label() }}
-
-              {{ form.vehicle_name(class="form-control", placeholder="Vehicle Name") }}
-
-              {# {{ form.current_station.label() }} {{ form.current_station(class="form-control") }} #}
-
-            </div>
-            <div class="modal-footer text-left">
-              {{ form.submit(class="btn btn-primary mt-4") }}
-            </div>
-          </form>
-          </div>
-        </div>
-      </div>
-
 
     </div>
 
