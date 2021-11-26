@@ -1,10 +1,11 @@
 from flask_login.utils import logout_user
-from dpmb.models import db, User, Role, Ticket, Link, Station, Vehicle
+from dpmb.models import db, User, Role, Ticket, Link, Station, Vehicle, StationLink
 from dpmb.forms import LoginForm, RegisterForm, EditForm, VehicleForm, StationForm, TicketForm, UserForm
 from flask import render_template, flash, request, redirect
 from dpmb import app, login_manager, authorize
 from flask_login import login_user, login_required
 from dpmb import bcrypt
+from datetime import datetime
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -180,13 +181,13 @@ def edit_station(type):
     if request.method == 'POST':
         if type == "add":
             data = Station()
-            
+
             data.name = form.name.data.strip()
             db.session.add(data)
             db.session.commit()
             return redirect("/station")
         elif type == "edit":
-        
+
             toedit = Station.query.filter_by(id=form.id.data).first()
             toedit.name = form.name.data
             db.session.commit()
@@ -238,7 +239,7 @@ def edit_ticket(type):
             data = Ticket()
             user = User.query.filter_by(email=form.email.data).first()
             link = form.link.data.partition(" ")[0]
-            data.customerid = user.id 
+            data.customerid = user.id
             data.linkid = link
             data.expiration = form.expiration.data
             db.session.add(data)
@@ -248,7 +249,7 @@ def edit_ticket(type):
             toedit = Ticket.query.filter_by(id=form.id.data).first()
             user = User.query.filter_by(email=form.email.data).first()
             link = form.link.data.partition(" ")[0]
-            toedit.customerid = user.id 
+            toedit.customerid = user.id
             toedit.linkid = link
             toedit.expiration = form.expiration.data
             db.session.commit()
@@ -272,7 +273,7 @@ def edit_vehicle(type):
             db.session.commit()
             return redirect("/vehicle")
         elif type == "edit":
-            
+
             toedit = Vehicle.query.filter_by(id=form.id.data).first()
             toedit.vehicle_name = form.vehicle_name.data
             db.session.commit()
