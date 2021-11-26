@@ -19,7 +19,7 @@ class Role(db.Model, AllowancesMixin):
         names = []
         for role in query:
             names.append(role.name)
-        return names 
+        return names
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
@@ -38,7 +38,7 @@ class User(db.Model, UserMixin):
         names = []
         for user in query:
             names.append(user.email)
-        return names    
+        return names
 
 class Ticket(db.Model):
     __tablename__ = 'ticket'
@@ -48,11 +48,20 @@ class Ticket(db.Model):
     linkid = db.Column(db.Integer, db.ForeignKey("link.id"), nullable=False)
     expiration = db.Column(db.DateTime)
 
+class StationLink(db.Model):
+    __tablename__ = 'station_link'
+    station_id = db.Column(db.ForeignKey('station.id'), primary_key=True)
+    link_id = db.Column(db.ForeignKey('link.id'), primary_key=True)
+    time = db.Column(db.DateTime)
+    station = db.relationship("Station", back_populates="links")
+    link = db.relationship("Link", back_populates="stations")
+
 class Station(db.Model):
     __tablename__ = 'station'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
+    links = db.relationship("StationLink", back_populates="link")
 
     def getAllStationNames():
         query = Station.query.all()
@@ -68,14 +77,15 @@ class Link(db.Model):
     #maybe pickletype for start and finish instead of FKs?
     start = db.Column(db.Integer, db.ForeignKey("station.id"), nullable=False)
     end = db.Column(db.Integer, db.ForeignKey("station.id"), nullable=False)
+    stations = db.relationship("StationLink", back_populates="station")
 
     def getAllLinks():
         query = Link.query.all()
-        
+
         links = []
         for link in query:
             names = []
-            names.append([Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()]) 
+            names.append([Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
             links.append (f"{link.id} {names[0][0].name}-{names[0][1].name}")
         return links
 class Vehicle(db.Model):
