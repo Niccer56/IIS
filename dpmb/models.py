@@ -61,7 +61,7 @@ class Station(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
-    links = db.relationship("StationLink", back_populates="link")
+    links = db.relationship("StationLink", back_populates="station")
 
     def getAllStationNames():
         query = Station.query.all()
@@ -77,7 +77,7 @@ class Link(db.Model):
     #maybe pickletype for start and finish instead of FKs?
     start = db.Column(db.Integer, db.ForeignKey("station.id"), nullable=False)
     end = db.Column(db.Integer, db.ForeignKey("station.id"), nullable=False)
-    stations = db.relationship("StationLink", back_populates="station")
+    stations = db.relationship("StationLink", back_populates="link")
 
     def getAllLinks():
         query = Link.query.all()
