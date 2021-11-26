@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, validators, ValidationError, SelectField, DateField
 from wtforms import DateTimeLocalField
 from wtforms.fields.simple import HiddenField
-from dpmb.models import User, Vehicle, Station, Link
+from dpmb.models import User, Vehicle, Station, Link, Role 
 class RegisterForm(FlaskForm):
 
     first_name = StringField(label='Meno:', validators=[validators.InputRequired()])
@@ -44,4 +44,13 @@ class TicketForm(FlaskForm):
     email = SelectField(u'User: ', choices=User.getAllEmails(), validators=[validators.InputRequired()]) 
     link = SelectField(u'Link: ', choices=Link.getAllLinks(), validators=[validators.InputRequired()])
     expiration = DateTimeLocalField('Expiration Date',format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])    # bude treba este format casu upravit
+    submit = SubmitField(label='Submit', validators=[validators.InputRequired()])
+
+class UserForm(FlaskForm):
+    id = HiddenField()
+    first_name = StringField(label='First Name: ', validators=[validators.InputRequired()])
+    last_name = StringField(label='Last Name: ', validators=[validators.InputRequired()])
+    email = StringField(label='Email: ', validators=[validators.InputRequired()])
+    password = StringField(label='Password: ', validators=[validators.InputRequired()])    
+    role = SelectField(u'Role: ', choices=Role.getAllRoles(), validators=[validators.InputRequired()])
     submit = SubmitField(label='Submit', validators=[validators.InputRequired()])

@@ -1,6 +1,6 @@
 from flask_login.utils import logout_user
 from dpmb.models import db, User, Role, Ticket, Link, Station, Vehicle
-from dpmb.forms import LoginForm, RegisterForm, EditForm, VehicleForm, StationForm, TicketForm
+from dpmb.forms import LoginForm, RegisterForm, EditForm, VehicleForm, StationForm, TicketForm, UserForm
 from flask import render_template, flash, request, redirect
 from dpmb import app, login_manager, authorize
 from flask_login import login_user, login_required
@@ -20,13 +20,14 @@ def home_page():
 #@authorize.has_role("admin")
 def customer_page():
     #User.query.join(User.roles).filter_by(name="carrier").all()
+    form = UserForm()
     user = User.query.all()
     roles = Role.query.all()
     types = []
     for role in roles:
         types.append(role.name)
 
-    return render_template('customer.html', customers=user, usertype=types)
+    return render_template('customer.html', customers=user, usertype=types, form = form)
 
 @app.route('/ticket', methods=['GET', 'POST'])
 #@login_required
@@ -135,15 +136,7 @@ def delete_link(id):
         db.session.commit()
     return redirect("/link")
 
-@app.route('/customer/changetype/<int:id>', methods=["POST"])
-def change_type(id):
-    user = User.query.filter_by(id=id).first()
-    if user is not None:
-        type = request.form.get("type")
-        role = Role.query.filter_by(name=type).first()
-        user.roles = [role]
-        db.session.commit()
-    return redirect("/customer")
+
 
 @app.route('/customer/changestart/<int:id>', methods=["POST"])
 def change_start(id):
@@ -165,7 +158,7 @@ def change_end(id):
         db.session.commit()
     return redirect("/link")
 
-@app.route('/customer/edit/<int:id>', methods=["GET", "POST"])
+"""@app.route('/customer/edit/<int:id>', methods=["GET", "POST"])
 def edit_user(id):
     user = User.query.filter_by(id=id).first()
     form = EditForm(obj=user)
@@ -179,7 +172,7 @@ def edit_user(id):
         else:
             for err in form.errors:
                 flash(form.errors[err][0])
-    return render_template('edit.html', form=form, username=user.first_name)
+    return render_template('edit.html', form=form, username=user.first_name)"""
 
 @app.route('/station/edit_station/<string:type>', methods=['POST'])
 def edit_station(type):
@@ -204,6 +197,38 @@ def edit_station(type):
                 db.session.delete(station)
                 db.session.commit()
                 return redirect("/station")
+
+@app.route('/customer/edit_customer/<string:type>', methods=['POST'])
+def edit_customer(type):
+    form = UserForm()
+    if request.method == 'POST':
+        if type == "add":
+            data = User()
+            data.first_name = form.first_name.data.strip()
+            data.last_name = form.last_name.data.strip()
+            data.email = form.email.data.strip()
+            data.password = form.password.data
+            role = Role.query.filter_by(name=form.role.data).first()
+            data.roles = [role]
+            db.session.add(data)
+            db.session.commit()
+            return redirect("/customer")
+        elif type == "edit":
+            role = Role.query.filter_by(name=form.role.data).first()
+            toedit = User.query.filter_by(id=form.id.data).first()
+            toedit.first_name = form.first_name.data
+            toedit.last_name = form.last_name.data
+            toedit.email = form.email.data
+            toedit.password = form.password.data
+            toedit.roles = [role]
+            db.session.commit()
+            return redirect("/customer")
+        elif type == "delete":
+            user = User.query.filter_by(id=form.id.data).first()
+            if user is not None:
+                db.session.delete(user)
+                db.session.commit()
+                return redirect("/customer")
 
 @app.route('/ticket/edit_ticket/<string:type>', methods=['POST'])
 def edit_ticket(type):
@@ -261,5 +286,4 @@ def edit_vehicle(type):
 
 
 if __name__ == '__main__':
-
     app.run(debug=True)

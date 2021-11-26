@@ -14,7 +14,12 @@ class Role(db.Model, AllowancesMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False, unique=True)
-
+    def getAllRoles():
+        query = Role.query.all()
+        names = []
+        for role in query:
+            names.append(role.name)
+        return names 
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
