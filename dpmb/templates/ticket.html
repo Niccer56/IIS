@@ -26,14 +26,14 @@
         <tr>
           <td>{{cnt.value}}</td>
           <td>{{ticket[1].email}}</td>
-          <td>{{ticket[2].name +"-" + ticket[3].name}}</td>
+          <td>{{ticket[4].id|string +  ticket[2].name +"-" + ticket[3].name}}</td>
           <td>{{ticket[0].expiration}}</td>
           <td>
-            <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editTicket{{ticket.id}}"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-danger" data-toggle="modal" data-target="#deleteTicket{{ticket.id}}"><i class="fas fa-trash"></i></button>
+            <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editTicket{{ticket[0].id}}"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-danger" data-toggle="modal" data-target="#deleteTicket{{ticket[0].id}}"><i class="fas fa-trash"></i></button>
           </td>
             <!--Edit Ticket-->
-            <div class="modal fade" id="editTicket{{ticket.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade" id="editTicket{{ticket[0].id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -45,7 +45,7 @@
                 <form action="/ticket/edit_ticket/edit" method="POST" class="form-register">
                   <div class="modal-body">
 
-                    <input type="hidden" name="id" value={{ ticket.id }}>
+                    <input type="hidden" name="id" value={{ ticket[0].id }}>
 
                     {{ form.email.label() }} {{ form.email(class="form-control") }}
                     {{ form.link.label() }} {{ form.link(class="form-control") }}
@@ -60,7 +60,7 @@
               </div>
             </div>
             <!--Delete Station-->
-            <div class="modal fade" id="deleteTicket{{ticket.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade" id="deleteTicket{{ticket[0].id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -71,9 +71,9 @@
                   </div>
                 <form action="/ticket/edit_ticket/delete" method="POST" class="form-register">
                   <div class="modal-body">
-                    <input type="hidden" name="id" value={{ ticket.id }}>
+                    <input type="hidden" name="id" value={{ ticket[0].id }}>
                     <div class="text-left">
-                      <h5>Are you sure to delete ticket {{ticket[2].name +"-" + ticket[3].name}}</h5>
+                      <h5>Are you sure to delete ticket {{ticket[4].id|string +  ticket[2].name +"-" + ticket[3].name}}</h5>
                       {{ form.submit(class="btn btn-primary mt-4") }}
                     </div>
                   </div>

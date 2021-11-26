@@ -37,7 +37,7 @@ def ticket_page():
     tickets = []
     for ticket in query:
         link = Link.query.filter_by(id=ticket.linkid).first()
-        tickets.append([ticket, User.query.filter_by(id=ticket.customerid).first(), Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
+        tickets.append([ticket, User.query.filter_by(id=ticket.customerid).first(), Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first(), link])
     return render_template('ticket.html', tickets=tickets, form=form)
 
 @app.route('/vehicle', methods=['GET'])
@@ -187,6 +187,7 @@ def edit_station(type):
     if request.method == 'POST':
         if type == "add":
             data = Station()
+            
             data.name = form.name.data.strip()
             db.session.add(data)
             db.session.commit()
@@ -210,11 +211,21 @@ def edit_ticket(type):
     if request.method == 'POST':
         if type == "add":
             data = Ticket()
+            user = User.query.filter_by(email=form.email.data).first()
+            link = form.link.data.partition(" ")[0]
+            data.customerid = user.id 
+            data.linkid = link
+            data.expiration = form.expiration.data
             db.session.add(data)
             db.session.commit()
             return redirect("/ticket")
         elif type == "edit":
-        
+            toedit = Ticket.query.filter_by(id=form.id.data).first()
+            user = User.query.filter_by(email=form.email.data).first()
+            link = form.link.data.partition(" ")[0]
+            toedit.customerid = user.id 
+            toedit.linkid = link
+            toedit.expiration = form.expiration.data
             db.session.commit()
             return redirect("/ticket")
         elif type == "delete":
@@ -250,5 +261,5 @@ def edit_vehicle(type):
 
 
 if __name__ == '__main__':
-     
+
     app.run(debug=True)
