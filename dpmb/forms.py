@@ -42,5 +42,5 @@ class TicketForm(FlaskForm):
     id = HiddenField()
     email = SelectField(u'User: ', choices=User.getAllEmails(), validators=[validators.InputRequired()]) 
     link = SelectField(u'Link: ', choices=Link.getAllLinks(), validators=[validators.InputRequired()])
-    expiration = DateField('Expiration Date', format='%m/%d/%Y', validators=[validators.InputRequired()])    
+    expiration = DateField('Expiration Date', validators=[validators.InputRequired()])    # bude treba este format casu upravit
     submit = SubmitField(label='Submit', validators=[validators.InputRequired()])
