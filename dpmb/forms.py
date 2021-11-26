@@ -33,10 +33,16 @@ class StationForm(FlaskForm):
     name = StringField(label='Zastávka:', validators=[validators.InputRequired()])
     submit = SubmitField(label='Confirm', validators=[validators.InputRequired()])
 
+class LinkForm(FlaskForm):
+    id = HiddenField()
+    name = StringField(label='Zastávka:', validators=[validators.InputRequired()])
+    submit = SubmitField(label='Confirm', validators=[validators.InputRequired()])
+
 class VehicleForm(FlaskForm):
     id = HiddenField()
     vehicle_name = StringField(label='Vehicle Name: ', validators=[validators.InputRequired()])
     current_station = SelectField(u'Current Station: ', choices=Station.getAllStationNames(), validators=[validators.InputRequired()])
+    owner = SelectField(u'Owner: ', choices=User.getAllCarriersName() , validators=[validators.InputRequired()])
     submit = SubmitField(label='Submit', validators=[validators.InputRequired()])
 
 class TicketForm(FlaskForm):

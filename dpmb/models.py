@@ -33,6 +33,13 @@ class User(db.Model, UserMixin):
     def password_check(self, unhashed_pwd):
         return bcrypt.check_password_hash(self.password, unhashed_pwd)
 
+    def getAllCarriersName():
+        carriers = User.query.join(User.roles).filter_by(name="carrier").all()
+        names = []
+        for carrier in carriers:
+            names.append(f"{carrier.email}")
+        return names
+
     def getAllEmails():
         query = User.query.all()
         names = []
@@ -92,7 +99,6 @@ class Vehicle(db.Model):
     __tablename__ = 'vehicle'
 
     id = db.Column(db.Integer, primary_key=True)
-    linkid = db.Column(db.Integer, db.ForeignKey("link.id"))
     vehicle_name = db.Column(db.String(256))
     owner = db.Column(db.Integer, db.ForeignKey("users.id"))
     current_station = db.Column(db.Integer, db.ForeignKey("station.id"))

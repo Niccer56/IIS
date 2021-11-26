@@ -20,7 +20,7 @@ def home_page():
 #@login_required
 #@authorize.has_role("admin")
 def customer_page():
-    #User.query.join(User.roles).filter_by(name="carrier").all()
+    
     form = UserForm()
     user = User.query.all()
     roles = Role.query.all()
@@ -46,14 +46,22 @@ def ticket_page():
 #@login_required
 #@authorize.has_role("admin", "carrier")
 def vehicle_page():
+    db.session.commit()
     form = VehicleForm()
     vehicle = Vehicle.query.all()
-    return render_template('vehicle.html', vehicles=vehicle, form=form)
+    vehicles = []
+    for current in vehicle:
+        query_station = Station.query.filter_by(id=current.current_station).first().name
+        query_carrier = User.query.filter_by(id=current.owner).first().email
+        vehicles.append([current, query_station, query_carrier])
+
+    return render_template('vehicle.html', vehicles=vehicles, form=form)
 
 @app.route('/station', methods=['GET', 'POST'])
 #@login_required
 #@authorize.has_role("admin", "carrier")
 def station_page():
+    db.session.commit()
     form = StationForm()
     station = Station.query.all()
     return render_template('station.html', stations=station, form=form)
@@ -62,7 +70,7 @@ def station_page():
 #@login_required
 #@authorize.has_role("admin", "carrier")
 def link_page():
-
+    db.session.commit()
     query = Link.query.all()
     links = []
     for link in query:
@@ -269,6 +277,8 @@ def edit_vehicle(type):
         if type == "add":
             data = Vehicle()
             data.vehicle_name = form.vehicle_name.data.strip()
+            data.owner = User.query.filter_by(email=form.owner.data).first().id
+            data.current_station = Station.query.filter_by(name=form.current_station.data).first().id
             db.session.add(data)
             db.session.commit()
             return redirect("/vehicle")
@@ -276,6 +286,8 @@ def edit_vehicle(type):
 
             toedit = Vehicle.query.filter_by(id=form.id.data).first()
             toedit.vehicle_name = form.vehicle_name.data
+            toedit.owner = User.query.filter_by(email=form.owner.data).first().id
+            toedit.current_station = Station.query.filter_by(name=form.current_station.data).first().id
             db.session.commit()
             return redirect("/vehicle")
         elif type == "delete":
