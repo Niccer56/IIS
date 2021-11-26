@@ -41,7 +41,7 @@ class Ticket(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     customerid = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
     linkid = db.Column(db.Integer, db.ForeignKey("link.id"), nullable=False)
-    expiration = db.Column(db.DateTime, nullable=False)
+    expiration = db.Column(db.DateTime)
 
 class Station(db.Model):
     __tablename__ = 'station'

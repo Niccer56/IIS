@@ -1,6 +1,7 @@
 from flask_admin.contrib.sqla.view import ModelView
 from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, validators, ValidationError, SelectField, DateField
+from wtforms import DateTimeLocalField
 from wtforms.fields.simple import HiddenField
 from dpmb.models import User, Vehicle, Station, Link
 class RegisterForm(FlaskForm):
@@ -42,5 +43,5 @@ class TicketForm(FlaskForm):
     id = HiddenField()
     email = SelectField(u'User: ', choices=User.getAllEmails(), validators=[validators.InputRequired()]) 
     link = SelectField(u'Link: ', choices=Link.getAllLinks(), validators=[validators.InputRequired()])
-    expiration = DateField('Expiration Date', validators=[validators.InputRequired()])    # bude treba este format casu upravit
+    expiration = DateTimeLocalField('Expiration Date',format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])    # bude treba este format casu upravit
     submit = SubmitField(label='Submit', validators=[validators.InputRequired()])
