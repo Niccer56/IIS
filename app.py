@@ -71,19 +71,18 @@ def station_page():
 #@authorize.has_role("admin", "carrier")
 def link_page():
     db.session.commit()
-    query = StationLink.query.all()
-    links = []
+    query = Link.query.all()
+    
     
     form = LinkForm()
     names = []
     for link in query:
+        links = [] 
+        links.append([Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
         
-        links.append([Station.query.filter_by(id=link.link.start).first(), Station.query.filter_by(id=link.link.end).first(),link])
-        
-        
-    for link in links:
+        for station in links:
             
-        names.append([link[0].name + " "  + link[2].time.strftime("%m/%d/%Y, %H:%M"),link[1].name + " " + link[2].time.strftime("%m/%d/%Y, %H:%M"),link[2].link_id ]) 
+            names.append([station[0].name + " "  + link.time_first.strftime("%m/%d/%Y, %H:%M"),station[1].name + " " + link.time_last.strftime("%m/%d/%Y, %H:%M"),link.id ])   
             
     return render_template('link.html', links=names, form = form)
 
@@ -351,5 +350,5 @@ def edit_vehicle(type):
 
 
 if __name__ == '__main__':
-            
+               
     app.run(debug=True)
