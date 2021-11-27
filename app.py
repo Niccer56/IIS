@@ -275,17 +275,25 @@ def edit_link(type):
     if request.method == 'POST':
         if type == "add":
             data = Link()
-            stationlink = StationLink()
+            stationlink_first = StationLink()
+            stationlink_last = StationLink()
+
             name = form.start.data.partition(" ")[0]
             station = Station.query.filter_by(name=name).first()
             data.start = station.id
+            stationlink_first.station = station
+            stationlink_first.time = form.time_first.data
+
             nameend = form.end.data.partition(" ")[0]
             station = Station.query.filter_by(name=nameend).first()
             data.end = station.id
             data.time_first = form.time_first.data
             data.time_last = form.time_last.data
-            stationlink.station = station
-            data.stations.append(stationlink)
+            stationlink_last.station = station
+            stationlink_last.time = form.time_last.data
+
+            data.stations.append(stationlink_first)
+            data.stations.append(stationlink_last)
             db.session.add(data)
             db.session.commit()
             return redirect("/link")

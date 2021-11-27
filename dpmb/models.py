@@ -57,18 +57,19 @@ class Ticket(db.Model):
 
 class StationLink(db.Model):
     __tablename__ = 'station_link'
-    station_id = db.Column(db.ForeignKey('station.id'), primary_key=True)
-    link_id = db.Column(db.ForeignKey('link.id'), primary_key=True)
+    id = db.Column(db.Integer, primary_key=True)
+    station_id = db.Column(db.ForeignKey('station.id'))
+    link_id = db.Column(db.ForeignKey('link.id'))
     time = db.Column(db.DateTime, nullable=False)
 
     station = db.relationship("Station", back_populates="links")
     link = db.relationship("Link", back_populates="stations")
     def getAllStations():
-        query = StationLink.query.all()
+        query = Station.query.all()
         names = []
         for station in query:
 
-            names.append((station.station.name + " " + station.time.strftime("%m/%d/%Y %H:%M")))
+            names.append(station.name + " ")
         return names
 class Station(db.Model):
     __tablename__ = 'station'
@@ -95,7 +96,7 @@ class Link(db.Model):
     end = db.Column(db.Integer, db.ForeignKey("station.id"), nullable=False)
     time_first = db.Column(db.DateTime, nullable=False)
     time_last = db.Column(db.DateTime, nullable=False)
-    stations = db.relationship("StationLink", back_populates="link")
+    stations = db.relationship("StationLink", back_populates="link", cascade="all, delete-orphan")
    # vehicle =   db.Column(db.Integer, db.ForeignKey("vehicle.id"))
     def getAllLinks():
         query = Link.query.all()
