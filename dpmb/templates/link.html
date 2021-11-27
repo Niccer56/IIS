@@ -59,7 +59,7 @@
             </div>
             
             <!--Delete Link-->
-            <div class="modal fade" id="deleteLink{{link.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal fade" id="deleteLink{{link[2]}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
@@ -101,6 +101,8 @@
 
             {{ form.start.label() }} {{ form.start(class="form-control") }}
             {{ form.end.label() }} {{ form.end(class="form-control") }}
+            {{ form.time_first.label() }} {{ form.time_first(class="form-control") }}
+            {{ form.time_last.label() }} {{ form.time_last(class="form-control") }}
 
       
 

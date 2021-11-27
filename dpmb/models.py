@@ -59,7 +59,8 @@ class StationLink(db.Model):
     __tablename__ = 'station_link'
     station_id = db.Column(db.ForeignKey('station.id'), primary_key=True)
     link_id = db.Column(db.ForeignKey('link.id'), primary_key=True)
-    time = db.Column(db.DateTime)
+    time = db.Column(db.DateTime, nullable=False)
+
     station = db.relationship("Station", back_populates="links")
     link = db.relationship("Link", back_populates="stations")
     def getAllStations():
@@ -92,6 +93,8 @@ class Link(db.Model):
     #maybe pickletype for start and finish instead of FKs?
     start = db.Column(db.Integer, db.ForeignKey("station.id"), nullable=False)
     end = db.Column(db.Integer, db.ForeignKey("station.id"), nullable=False)
+    time_first = db.Column(db.DateTime, nullable=False)
+    time_last = db.Column(db.DateTime, nullable=False)
     stations = db.relationship("StationLink", back_populates="link")
    # vehicle =   db.Column(db.Integer, db.ForeignKey("vehicle.id"))
     def getAllLinks():

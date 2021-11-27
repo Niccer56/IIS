@@ -37,6 +37,8 @@ class LinkForm(FlaskForm):
     id = HiddenField()
     start = SelectField(u'Start: ', choices=StationLink.getAllStations(), validators=[validators.InputRequired()])
     end = SelectField(u'End: ', choices=StationLink.getAllStations(), validators=[validators.InputRequired()])
+    time_first =DateTimeLocalField('First Station Time',format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])
+    time_last = DateTimeLocalField('Last Station Time',format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])
     submit = SubmitField(label='Confirm', validators=[validators.InputRequired()])
 
 class VehicleForm(FlaskForm):

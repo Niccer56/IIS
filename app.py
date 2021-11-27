@@ -73,15 +73,19 @@ def link_page():
     db.session.commit()
     query = StationLink.query.all()
     links = []
-    linkid = []
+    
     form = LinkForm()
     names = []
     for link in query:
-        links.append([Station.query.filter_by(id=link.link.start).first(), Station.query.filter_by(id=link.link.end).first(),link])
-        linkid.append([link.link_id])
         
-        names.append([links[0][0].name + " "  + links[0][2].time.strftime("%m/%d/%Y, %H:%M"),links[0][1].name + " " + links[0][2].time.strftime("%m/%d/%Y, %H:%M"),link.link_id ])
-    return render_template('link.html', links=names, form = form, linkids=linkid)
+        links.append([Station.query.filter_by(id=link.link.start).first(), Station.query.filter_by(id=link.link.end).first(),link])
+        
+        
+    for link in links:
+            
+        names.append([link[0].name + " "  + link[2].time.strftime("%m/%d/%Y, %H:%M"),link[1].name + " " + link[2].time.strftime("%m/%d/%Y, %H:%M"),link[2].link_id ]) 
+            
+    return render_template('link.html', links=names, form = form)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
@@ -271,23 +275,43 @@ def edit_link(type):
     if request.method == 'POST':
         if type == "add":
             data = Link()
+            stationlink = StationLink()
             name = form.start.data.partition(" ")[0]
             station = Station.query.filter_by(name=name).first()
             data.start = station.id
-            name = form.end.data.partition(" ")[0]
-            station = Station.query.filter_by(name=name).first()
+            nameend = form.end.data.partition(" ")[0]
+            station = Station.query.filter_by(name=nameend).first()
             data.end = station.id
-            stationlink = StationLink.query.filter_by(station_id=station.id).first()
-            data.stations =[stationlink]
+            data.time_first = form.time_first.data
+            data.time_last = form.time_last.data
+            stationlink.station = station
+            data.stations.append(stationlink)
             db.session.add(data)
             db.session.commit()
             return redirect("/link")
         elif type == "edit":
-
+            toedit = Link.query.filter_by(id=form.id.data).first()
+            stationlink = StationLink()
+            name = form.start.data.partition(" ")[0]
+            station = Station.query.filter_by(name=name).first()
+            toedit.start = station.id
+            nameend = form.end.data.partition(" ")[0]
+            station = Station.query.filter_by(name=nameend).first()
+            toedit.end = station.id
+            stationlink.station = Station()
+            stationlink.station.name = name = form.start.data.partition(" ")[0]
+            stationlink.time = datetime.now()
+            toedit.stations.append(stationlink)
+            
+            db.session.commit()
             
             return redirect("/link")
         elif type == "delete":
-            
+            link = Link.query.filter_by(id=form.id.data).first()
+
+            if link is not None:
+                db.session.delete(link)
+                db.session.commit()
                 return redirect("/link")
 
 @app.route('/vehicle/edit_vehicle/<string:type>', methods=['POST'])
@@ -319,5 +343,5 @@ def edit_vehicle(type):
 
 
 if __name__ == '__main__':
-    
+            
     app.run(debug=True)
