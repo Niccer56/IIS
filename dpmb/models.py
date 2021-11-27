@@ -67,7 +67,7 @@ class StationLink(db.Model):
         names = []
         for station in query:
 
-            names.append((station.station.name + " " + station.time.strftime("%m/%d/%Y, %H:%M")))
+            names.append((station.station.name + " " + station.time.strftime("%m/%d/%Y %H:%M")))
         return names
 class Station(db.Model):
     __tablename__ = 'station'

@@ -80,7 +80,6 @@ def link_page():
         links.append([Station.query.filter_by(id=link.link.start).first(), Station.query.filter_by(id=link.link.end).first(),link])
         linkid.append([link.link_id])
         for link in links:
-            print(link[1])
             names.append([link[0].name + " "  + link[2].time.strftime("%m/%d/%Y, %H:%M"),link[1].name + " " + link[2].time.strftime("%m/%d/%Y, %H:%M")])
     return render_template('link.html', links=names, form = form, linkids=linkid)
 
@@ -141,15 +140,6 @@ def delete_user(id):
 
 
 
-
-
-@app.route('/link/delete/<int:id>')
-def delete_link(id):
-    link = Link.query.filter_by(id=id).first()
-    if link is not None:
-        db.session.delete(link)
-        db.session.commit()
-    return redirect("/link")
 
 
 
@@ -275,32 +265,30 @@ def edit_ticket(type):
                 db.session.commit()
                 return redirect("/ticket")
 
-@app.route('/vehicle/edit_vehicle/<string:type>', methods=['POST'])
+@app.route('/link/edit_link/<string:type>', methods=['POST'])
 def edit_link(type):
-    form = VehicleForm()
+    form = LinkForm()
     if request.method == 'POST':
         if type == "add":
-            data = Vehicle()
-            data.vehicle_name = form.vehicle_name.data.strip()
-            data.owner = User.query.filter_by(email=form.owner.data).first().id
-            data.current_station = Station.query.filter_by(name=form.current_station.data).first().id
+            data = Link()
+            name = form.start.data.partition(" ")[0]
+            station = Station.query.filter_by(name=name).first()
+            data.start = station.id
+            name = form.end.data.partition(" ")[0]
+            station = Station.query.filter_by(name=name).first()
+            data.end = station.id
+            stationlink = StationLink.query.filter_by(station_id=station.id).first()
+            data.stations =[stationlink]
             db.session.add(data)
             db.session.commit()
-            return redirect("/vehicle")
+            return redirect("/link")
         elif type == "edit":
 
-            toedit = Vehicle.query.filter_by(id=form.id.data).first()
-            toedit.vehicle_name = form.vehicle_name.data
-            toedit.owner = User.query.filter_by(email=form.owner.data).first().id
-            toedit.current_station = Station.query.filter_by(name=form.current_station.data).first().id
-            db.session.commit()
-            return redirect("/vehicle")
+            
+            return redirect("/link")
         elif type == "delete":
-            vehicle = Vehicle.query.filter_by(id=form.id.data).first()
-            if vehicle is not None:
-                db.session.delete(vehicle)
-                db.session.commit()
-                return redirect("/vehicle")
+            
+                return redirect("/link")
 
 @app.route('/vehicle/edit_vehicle/<string:type>', methods=['POST'])
 def edit_vehicle(type):
