@@ -5,56 +5,134 @@
 {% endblock title %}
 
 {% block mainContent %}
-    <h1>Prehľad spojení v DPMB</h1>
+    <h1 class="text-center mt-4 mb-4">Prehľad spojení v DPMB</h1>
+    <div class="row justify-content-end">
+      <button class="btn btn-success mb-2" style="border-radius: 10px;" data-toggle="modal" data-target="#addLink"><i class="fas fa-plus-circle"></i> Add Link</button>
     <table class="table table-striped table-dark">
       <thead>
         <tr>
           <th scope="col">#</th>
           <th scope="col">Start</th>
           <th scope="col">End</th>
-          <th scope="col">Delete</th>
+          <th scope="col">Actions</th>
         </tr>
       </thead>
       <tbody>
         {% set cnt = namespace(value=0) %}
         {% for link in links %}
+        {% for linkid in linkids %}
+        {% set cnt.value = cnt.value + 1 %}
         <tr>
-          <td>{{link[0].id}}</td>
+          <td>{{cnt.value}}</td>
+          <td>{{link[0]}}</td>
+          <td>{{link[1]}}</td>
           <td>
-            <form id="{{cnt.value}}" class="select" method="POST" action="{{ url_for('change_start', id=link[0].id)}}" onchange="myFunction({{cnt.value}})">
-              <select class="custom-select" name="start">
-                <option selected>{{link[1].name}}</option>
-                {% for station in stations %}
-                  {% if (station.id != link[1].id) and (station.id != link[2].id) %}
-                    <option>{{station.name}}</option>
-                  {% endif %}
-                {% endfor %}
-              </select>
-            </form>
-          </td>
-          {% set cnt.value = cnt.value + 1 %}
-          <td>
-            <form id="{{cnt.value}}" class="select" method="POST" action="{{ url_for('change_end', id=link[0].id)}}" onchange="myFunction({{cnt.value}})">
-              <select class="custom-select" name="end">
-                <option selected>{{link[2].name}}</option>
-                {% for station in stations %}
-                  {% if (station.id != link[2].id) and (station.id != link[1].id) %}
-                    <option>{{station.name}}</option>
-                  {% endif %}
-                {% endfor %}
-              </select>
-            </form>
-          </td>
-          {% set cnt.value = cnt.value + 1 %}
-          <td><a href="{{url_for('delete_link', id=link[0].id)}}" class="btn btn-outline-danger">Delete</td>
-        </tr>
-        {% endfor %}
-      </tbody>
-    </table>
+            <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editLink{{linkid}}"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-danger" data-toggle="modal" data-target="#deleteLink{{linkid}}"><i class="fas fa-trash"></i></button>
+            </td>
+            <!--Edit Link-->
+            <div class="modal fade" id="editLink{{linkid}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Edit Link</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                <form action="/link/edit_link/edit" method="POST" class="form-register">
+                  <div class="modal-body">
+
+                    <input type="hidden" name="id" value={{ linkid }}>
+
+                    {{ form.start.label() }} {{ form.start(class="form-control") }}
+                    {{ form.end.label() }} {{ form.end(class="form-control") }}
+
+                  </div>
+                  <div class="modal-footer text-left">
+                    {{ form.submit(class="btn btn-primary mt-4") }}
+                  </div>
+                </form>
+                </div>
+              </div>
+            </div>
+            
+            <!--Delete Link-->
+            <div class="modal fade" id="deleteLink{{link.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Delete Link</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+                <form action="/link/edit_link/delete" method="POST" class="form-register">
+                  <div class="modal-body">
+                    <input type="hidden" name="id" value={{ linkid }}>
+                    <div class="text-left">
+                      <h5>Are you sure to delete link {{linkid}}</h5>
+                      {{ form.submit(class="btn btn-primary mt-4") }}
+                    </div>
+                  </div>
+                
+                </form>
+                </div>
+              </div>
+            </div>
+          </tr>
+          {% endfor %}
+          {% endfor %}
+        </tbody>
+      </table>            
+    <!--ADD LINK-->
+    <div class="modal fade" id="addLink" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Add Link</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+        <form action="/link/edit_link/add" method="POST" class="form-register">
+          <div class="modal-body">
+
+            {{ form.start.label() }} {{ form.start(class="form-control") }}
+            {{ form.end.label() }} {{ form.end(class="form-control") }}
+
+      
+
+          </div>
+          <div class="modal-footer text-left">
+            {{ form.submit(class="btn btn-primary mt-4") }}
+          </div>
+        </form>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
     <script>
       function myFunction(id) {
         document.getElementById(id).submit();
       }
     </script>
+    <style>
+
+      table {
+        border-collapse: collapse;
+        border-radius: 10px;
+        border-style: hidden; /* hide standard table (collapsed) border */
+        box-shadow: 0 0 0 1px #666; /* this draws the table border  */
+      }
+
+      td {
+          border: 1px solid #ccc;
+      }
+
+
+    </style>
 
 {% endblock mainContent %}

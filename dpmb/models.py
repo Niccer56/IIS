@@ -62,13 +62,21 @@ class StationLink(db.Model):
     time = db.Column(db.DateTime)
     station = db.relationship("Station", back_populates="links")
     link = db.relationship("Link", back_populates="stations")
+    def getAllStations():
+        query = StationLink.query.all()
+        names = []
+        for station in query:
 
+            names.append((station.station.name + " " + station.time.strftime("%m/%d/%Y, %H:%M")))
+        return names
 class Station(db.Model):
     __tablename__ = 'station'
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     links = db.relationship("StationLink", back_populates="station")
+
+    
 
     def getAllStationNames():
         query = Station.query.all()
@@ -85,7 +93,7 @@ class Link(db.Model):
     start = db.Column(db.Integer, db.ForeignKey("station.id"), nullable=False)
     end = db.Column(db.Integer, db.ForeignKey("station.id"), nullable=False)
     stations = db.relationship("StationLink", back_populates="link")
-
+   # vehicle =   db.Column(db.Integer, db.ForeignKey("vehicle.id"))
     def getAllLinks():
         query = Link.query.all()
 

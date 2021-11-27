@@ -3,7 +3,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, validators, ValidationError, SelectField, DateField
 from wtforms import DateTimeLocalField
 from wtforms.fields.simple import HiddenField
-from dpmb.models import User, Vehicle, Station, Link, Role 
+from dpmb.models import User, Vehicle, Station, Link, Role, StationLink
 class RegisterForm(FlaskForm):
 
     first_name = StringField(label='Meno:', validators=[validators.InputRequired()])
@@ -35,7 +35,8 @@ class StationForm(FlaskForm):
 
 class LinkForm(FlaskForm):
     id = HiddenField()
-    name = StringField(label='Zastávka:', validators=[validators.InputRequired()])
+    start = SelectField(u'Start: ', choices=StationLink.getAllStations(), validators=[validators.InputRequired()])
+    end = SelectField(u'End: ', choices=StationLink.getAllStations(), validators=[validators.InputRequired()])
     submit = SubmitField(label='Confirm', validators=[validators.InputRequired()])
 
 class VehicleForm(FlaskForm):

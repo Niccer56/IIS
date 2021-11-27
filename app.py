@@ -1,6 +1,6 @@
 from flask_login.utils import logout_user
 from dpmb.models import db, User, Role, Ticket, Link, Station, Vehicle, StationLink
-from dpmb.forms import LoginForm, RegisterForm, EditForm, VehicleForm, StationForm, TicketForm, UserForm
+from dpmb.forms import LinkForm, LoginForm, RegisterForm, EditForm, VehicleForm, StationForm, TicketForm, UserForm
 from flask import render_template, flash, request, redirect
 from dpmb import app, login_manager, authorize
 from flask_login import login_user, login_required
@@ -71,12 +71,18 @@ def station_page():
 #@authorize.has_role("admin", "carrier")
 def link_page():
     db.session.commit()
-    query = Link.query.all()
+    query = StationLink.query.all()
     links = []
+    linkid = []
+    form = LinkForm()
+    names = []
     for link in query:
-        links.append([link, Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
-    stations = Station.query.all()
-    return render_template('link.html', links=links, stations=stations)
+        links.append([Station.query.filter_by(id=link.link.start).first(), Station.query.filter_by(id=link.link.end).first(),link])
+        linkid.append([link.link_id])
+        for link in links:
+            print(link[1])
+            names.append([link[0].name + " "  + link[2].time.strftime("%m/%d/%Y, %H:%M"),link[1].name + " " + link[2].time.strftime("%m/%d/%Y, %H:%M")])
+    return render_template('link.html', links=names, form = form, linkids=linkid)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
@@ -269,6 +275,32 @@ def edit_ticket(type):
                 db.session.commit()
                 return redirect("/ticket")
 
+@app.route('/vehicle/edit_vehicle/<string:type>', methods=['POST'])
+def edit_link(type):
+    form = VehicleForm()
+    if request.method == 'POST':
+        if type == "add":
+            data = Vehicle()
+            data.vehicle_name = form.vehicle_name.data.strip()
+            data.owner = User.query.filter_by(email=form.owner.data).first().id
+            data.current_station = Station.query.filter_by(name=form.current_station.data).first().id
+            db.session.add(data)
+            db.session.commit()
+            return redirect("/vehicle")
+        elif type == "edit":
+
+            toedit = Vehicle.query.filter_by(id=form.id.data).first()
+            toedit.vehicle_name = form.vehicle_name.data
+            toedit.owner = User.query.filter_by(email=form.owner.data).first().id
+            toedit.current_station = Station.query.filter_by(name=form.current_station.data).first().id
+            db.session.commit()
+            return redirect("/vehicle")
+        elif type == "delete":
+            vehicle = Vehicle.query.filter_by(id=form.id.data).first()
+            if vehicle is not None:
+                db.session.delete(vehicle)
+                db.session.commit()
+                return redirect("/vehicle")
 
 @app.route('/vehicle/edit_vehicle/<string:type>', methods=['POST'])
 def edit_vehicle(type):
@@ -299,4 +331,6 @@ def edit_vehicle(type):
 
 
 if __name__ == '__main__':
+    
+    
     app.run(debug=True)
