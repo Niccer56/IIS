@@ -80,7 +80,7 @@ def link_page():
         links.append([Station.query.filter_by(id=link.link.start).first(), Station.query.filter_by(id=link.link.end).first(),link])
         linkid.append([link.link_id])
         
-        names.append([links[0][0].name + " "  + links[0][2].time.strftime("%m/%d/%Y, %H:%M"),links[0][1].name + " " + links[0][2].time.strftime("%m/%d/%Y, %H:%M")+ str(link.link_id) ])
+        names.append([links[0][0].name + " "  + links[0][2].time.strftime("%m/%d/%Y, %H:%M"),links[0][1].name + " " + links[0][2].time.strftime("%m/%d/%Y, %H:%M"),link.link_id ])
     return render_template('link.html', links=names, form = form, linkids=linkid)
 
 @app.route('/login', methods=['GET', 'POST'])
