@@ -298,17 +298,21 @@ def edit_link(type):
             return redirect("/link")
         elif type == "edit":
             toedit = Link.query.filter_by(id=form.id.data).first()
-            stationlink = StationLink()
+            toedit_station1 = StationLink.query.filter_by(link_id=form.id.data).first()
+            toedit_station2 = StationLink.query.filter_by(link_id=form.id.data).all()
+            toedit_station2 = toedit_station2[1]
             name = form.start.data.partition(" ")[0]
             station = Station.query.filter_by(name=name).first()
             toedit.start = station.id
+
             nameend = form.end.data.partition(" ")[0]
             station = Station.query.filter_by(name=nameend).first()
             toedit.end = station.id
-            stationlink.station = Station()
-            stationlink.station.name = name = form.start.data.partition(" ")[0]
-            stationlink.time = datetime.now()
-            toedit.stations.append(stationlink)
+            
+            toedit.time_first = form.time_first.data
+            toedit_station1.time = form.time_first.data
+            toedit_station2.time = form.time_last.data
+            toedit.time_last =  form.time_last.data
             
             db.session.commit()
             
@@ -350,5 +354,5 @@ def edit_vehicle(type):
 
 
 if __name__ == '__main__':
-               
+
     app.run(debug=True)
