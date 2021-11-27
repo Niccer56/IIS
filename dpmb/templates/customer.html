@@ -31,7 +31,7 @@
           <td>{{customer.email}}</td>
           <td>{{customer.roles[0].name}}</td>
           <td>
-            <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editCustomer{{customer.id}}"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editCustomer{{customer.id}}" onclick="selected('{{customer.roles[0].name}}')"><i class="fas fa-edit"></i></button>
             <button class="btn btn-danger" data-toggle="modal" data-target="#deleteCustomer{{customer.id}}"><i class="fas fa-trash"></i></button>
           </td>
             <!--Edit Customer-->
@@ -56,7 +56,9 @@
                     {{ form.email(class="form-control", placeholder="Email", value=customer.email) }}
                     {{ form.password.label() }}
                     {{ form.password(class="form-control", placeholder="Password", value=customer.password) }}
-                    {{ form.role.label() }} {{ form.role(class="form-control") }}
+                    <div class="js-user-type">
+                      {{ form.role.label() }} {{ form.role(class="form-control") }}
+                    </div>
 
                   </div>
                   <div class="modal-footer text-left">
@@ -131,8 +133,9 @@
 
   </div>                 
   <script>
-    function myFunction(id) {
-      document.getElementById(id).submit();
+    function selected(val) {
+      $('.js-user type option:selected').removeAttr("selected");
+      $('.js-user-type option[value="'+val+'"]').attr('selected','selected');
     }
   </script>
   <style>

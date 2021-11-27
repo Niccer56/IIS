@@ -18,7 +18,8 @@
         </tr>
       </thead>
       <tbody>
-        {% set cnt = namespace(value=0) %}
+        {% set cnt = namespace(value=0) %} 
+       
         {% for link in links %}
         
         {% set cnt.value = cnt.value + 1 %}
@@ -27,8 +28,11 @@
           <td>{{link[0]}}</td>
           <td>{{link[1]}}</td>
           <td>
-            
-            <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editLink{{link[2]}}"><i class="fas fa-edit"></i></button>
+            {% set split_name = namespace(value="") %}
+            {% set split_name2 = namespace(value="") %}
+            {% set split_name.value = link[0].split(" ", 1)[0] %}
+            {% set split_name2.value = link[1].split(" ", 1)[0] %}
+            <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editLink{{link[2]}}" onclick="selected('{{split_name.value}}','{{split_name2.value}}')"><i class="fas fa-edit"></i></button>
             <button class="btn btn-danger" data-toggle="modal" data-target="#deleteLink{{link[2]}}"><i class="fas fa-trash"></i></button>
             </td>
             <!--Edit Link-->
@@ -46,8 +50,12 @@
 
                     <input type="hidden" name="id" value={{ link[2] }}>
 
-                    {{ form.start.label() }} {{ form.start(class="form-control") }}
-                    {{ form.end.label() }} {{ form.end(class="form-control") }}
+                    <div class="js-station-start">
+                      {{ form.start.label() }} {{ form.start(class="form-control") }}
+                    </div>
+                    <div class="js-station-end">
+                      {{ form.end.label() }} {{ form.end(class="form-control") }}
+                    </div>
                     {{ form.time_first.label() }} {{ form.time_first(class="form-control") }}
                     {{ form.time_last.label() }} {{ form.time_last(class="form-control") }}
 
@@ -120,8 +128,12 @@
   </div>
 
     <script>
-      function myFunction(id) {
-        document.getElementById(id).submit();
+      function selected(val, val2) {
+        $('.js-station-start option:selected').removeAttr("selected");
+        $('.js-station-start option[value="'+val+'"]').attr('selected','selected');
+
+        $('.js-station-end option:selected').removeAttr("selected");
+        $('.js-station-end option[value="'+val2+'"]').attr('selected','selected');
       }
     </script>
     <style>

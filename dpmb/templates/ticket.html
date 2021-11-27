@@ -26,10 +26,10 @@
         <tr>
           <td>{{cnt.value}}</td>
           <td>{{ticket[1].email}}</td>
-          <td>{{ticket[4].id|string +  ticket[2].name +"-" + ticket[3].name}}</td>
+          <td>{{ticket[4].id|string +" "+  ticket[2].name +"-" + ticket[3].name}}</td>
           <td>{{ticket[0].expiration}}</td>
           <td>
-            <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editTicket{{ticket[0].id}}"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editTicket{{ticket[0].id}}" onclick="selected('{{ticket[1].email}}','{{ticket[4].id|string +" "+  ticket[2].name +"-" + ticket[3].name}}')"><i class="fas fa-edit"></i></button>
             <button class="btn btn-danger" data-toggle="modal" data-target="#deleteTicket{{ticket[0].id}}"><i class="fas fa-trash"></i></button>
           </td>
             <!--Edit Ticket-->
@@ -47,8 +47,13 @@
 
                     <input type="hidden" name="id" value={{ ticket[0].id }}>
 
-                    {{ form.email.label() }} {{ form.email(class="form-control") }}
-                    {{ form.link.label() }} {{ form.link(class="form-control") }}
+                    <div class="js-user">
+                      {{ form.email.label() }} {{ form.email(class="form-control") }}
+                    </div>
+                    <div class="js-link">
+                      {{ form.link.label() }} {{ form.link(class="form-control") }}
+                    </div>
+                    
                     {{ form.expiration.label() }} {{ form.expiration(class="form-control") }}
 
                   </div>
@@ -118,10 +123,14 @@
 
   </div>                 
   <script>
-    function myFunction(id) {
-      document.getElementById(id).submit();
+    function selected(val, val2) {
+      $('.js-user option:selected').removeAttr("selected");
+      $('.js-user option[value="'+val+'"]').attr('selected','selected');
+
+      $('.js-link option:selected').removeAttr("selected");
+      $('.js-link option[value="'+val2+'"]').attr('selected','selected');
     }
-  </script>
+    </script>
   <style>
 
     table {

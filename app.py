@@ -131,57 +131,6 @@ def register_page():
                 flash(form.errors[err][0])
     return render_template('register.html', form=form)
 
-@app.route('/customer/delete/<int:id>')
-def delete_user(id):
-    user = User.query.filter_by(id=id).first()
-    if user is not None:
-        db.session.delete(user)
-        db.session.commit()
-    return redirect("/customer")
-
-
-
-
-
-
-
-
-@app.route('/customer/changestart/<int:id>', methods=["POST"])
-def change_start(id):
-    link = Link.query.filter_by(id=id).first()
-    if link is not None:
-        start = request.form.get("start")
-        station = Station.query.filter_by(name=start).first()
-        link.start = station.id
-        db.session.commit()
-    return redirect("/link")
-
-@app.route('/customer/changefinish/<int:id>', methods=["POST"])
-def change_end(id):
-    link = Link.query.filter_by(id=id).first()
-    if link is not None:
-        end = request.form.get("end")
-        station = Station.query.filter_by(name=end).first()
-        link.end = station.id
-        db.session.commit()
-    return redirect("/link")
-
-"""@app.route('/customer/edit/<int:id>', methods=["GET", "POST"])
-def edit_user(id):
-    user = User.query.filter_by(id=id).first()
-    form = EditForm(obj=user)
-    if request.method == 'POST':
-        if form.validate_on_submit():
-            form.populate_obj(user)
-            if form.password1.data:
-                user.password = form.password1.data
-            db.session.commit()
-            return redirect("/customer")
-        else:
-            for err in form.errors:
-                flash(form.errors[err][0])
-    return render_template('edit.html', form=form, username=user.first_name)"""
-
 @app.route('/station/edit_station/<string:type>', methods=['POST'])
 def edit_station(type):
     form = StationForm()
@@ -196,7 +145,7 @@ def edit_station(type):
         elif type == "edit":
 
             toedit = Station.query.filter_by(id=form.id.data).first()
-            toedit.name = form.name.data
+            toedit.name = form.name.data.strip()
             db.session.commit()
             return redirect("/station")
         elif type == "delete":
@@ -298,9 +247,10 @@ def edit_link(type):
             return redirect("/link")
         elif type == "edit":
             toedit = Link.query.filter_by(id=form.id.data).first()
-            toedit_station1 = StationLink.query.filter_by(link_id=form.id.data).first()
-            toedit_station2 = StationLink.query.filter_by(link_id=form.id.data).all()
-            toedit_station2 = toedit_station2[1]
+            sorted_stations = StationLink.query.filter_by(link_id=form.id.data).all()
+            sorted_stations.sort(key=lambda x: x.time,reverse=True)
+            toedit_station1 = sorted_stations[0]
+            toedit_station2 = sorted_stations[-1]
             name = form.start.data.partition(" ")[0]
             station = Station.query.filter_by(name=name).first()
             toedit.start = station.id
@@ -319,6 +269,10 @@ def edit_link(type):
             return redirect("/link")
         elif type == "delete":
             link = Link.query.filter_by(id=form.id.data).first()
+            tickets = Ticket.query.filter_by(linkid=link.id).all()
+            if len(tickets) > 0:
+                for ticket in tickets:
+                    db.session.delete(ticket)
 
             if link is not None:
                 db.session.delete(link)
