@@ -34,6 +34,7 @@ def customer_page():
 #@login_required
 #@authorize.has_role("admin", "staff")
 def ticket_page():
+    db.session.commit()
     form = TicketForm()
     query = Ticket.query.all()
     tickets = []

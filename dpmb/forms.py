@@ -35,8 +35,8 @@ class StationForm(FlaskForm):
 
 class LinkForm(FlaskForm):
     id = HiddenField()
-    start = SelectField(u'Start: ', choices=StationLink.getAllStations(), validators=[validators.InputRequired()])
-    end = SelectField(u'End: ', choices=StationLink.getAllStations(), validators=[validators.InputRequired()])
+    start = SelectField(u'Start: ', choices=StationLink.getAllStations, validators=[validators.InputRequired()])
+    end = SelectField(u'End: ', choices=StationLink.getAllStations, validators=[validators.InputRequired()])
     time_first =DateTimeLocalField('First Station Time',format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])
     time_last = DateTimeLocalField('Last Station Time',format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])
     submit = SubmitField(label='Confirm', validators=[validators.InputRequired()])
@@ -44,14 +44,14 @@ class LinkForm(FlaskForm):
 class VehicleForm(FlaskForm):
     id = HiddenField()
     vehicle_name = StringField(label='Vehicle Name: ', validators=[validators.InputRequired()])
-    current_station = SelectField(u'Current Station: ', choices=Station.getAllStationNames(), validators=[validators.InputRequired()])
-    owner = SelectField(u'Owner: ', choices=User.getAllCarriersName() , validators=[validators.InputRequired()])
+    current_station = SelectField(u'Current Station: ', choices=Station.getAllStationNames, validators=[validators.InputRequired()])
+    owner = SelectField(u'Owner: ', choices=User.getAllCarriersName , validators=[validators.InputRequired()])
     submit = SubmitField(label='Submit', validators=[validators.InputRequired()])
 
 class TicketForm(FlaskForm):
     id = HiddenField()
-    email = SelectField(u'User: ', choices=User.getAllEmails(), validators=[validators.InputRequired()]) 
-    link = SelectField(u'Link: ', choices=Link.getAllLinks(), validators=[validators.InputRequired()])
+    email = SelectField(u'User: ', choices=User.getAllEmails, validators=[validators.InputRequired()]) 
+    link = SelectField(u'Link: ', choices=Link.getAllLinks, validators=[validators.InputRequired()])
     expiration = DateTimeLocalField('Expiration Date',format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])    # bude treba este format casu upravit
     submit = SubmitField(label='Submit', validators=[validators.InputRequired()])
 
@@ -61,5 +61,5 @@ class UserForm(FlaskForm):
     last_name = StringField(label='Last Name: ', validators=[validators.InputRequired()])
     email = StringField(label='Email: ', validators=[validators.InputRequired()])
     password = StringField(label='Password: ', validators=[validators.InputRequired()])    
-    role = SelectField(u'Role: ', choices=Role.getAllRoles(), validators=[validators.InputRequired()])
+    role = SelectField(u'Role: ', choices=Role.getAllRoles, validators=[validators.InputRequired()])
     submit = SubmitField(label='Submit', validators=[validators.InputRequired()])
