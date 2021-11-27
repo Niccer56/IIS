@@ -79,8 +79,8 @@ def link_page():
     for link in query:
         links.append([Station.query.filter_by(id=link.link.start).first(), Station.query.filter_by(id=link.link.end).first(),link])
         linkid.append([link.link_id])
-        for link in links:
-            names.append([link[0].name + " "  + link[2].time.strftime("%m/%d/%Y, %H:%M"),link[1].name + " " + link[2].time.strftime("%m/%d/%Y, %H:%M")])
+        
+        names.append([links[0][0].name + " "  + links[0][2].time.strftime("%m/%d/%Y, %H:%M"),links[0][1].name + " " + links[0][2].time.strftime("%m/%d/%Y, %H:%M")+ str(link.link_id) ])
     return render_template('link.html', links=names, form = form, linkids=linkid)
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -319,6 +319,5 @@ def edit_vehicle(type):
 
 
 if __name__ == '__main__':
-    
     
     app.run(debug=True)
