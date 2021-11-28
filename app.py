@@ -1,6 +1,6 @@
 from flask_login.utils import logout_user
 from dpmb.models import db, User, Role, Ticket, Link, Station, Vehicle, StationLink
-from dpmb.forms import LinkForm, LoginForm, RegisterForm, EditForm, VehicleForm,SearchForm, StationForm, TicketForm, UserForm, UserFormCarrier
+from dpmb.forms import LinkForm, LinkStationForm, LoginForm, RegisterForm, EditForm, VehicleForm,SearchForm, StationForm, TicketForm, UserForm, UserFormCarrier
 from flask import render_template, flash, request, redirect
 from dpmb import app, login_manager, authorize
 from flask_login import login_user, login_required, current_user
@@ -107,6 +107,7 @@ def link_page():
     
     
     form = LinkForm()
+    
     names = []
     for link in query:
         links = [] 
@@ -262,6 +263,25 @@ def edit_ticket(type):
                 db.session.commit()
                 return redirect("/ticket")
 
+@app.route('/link/edit_stations', methods=['GET','POST'])
+def stations_form():
+    station_form = LinkStationForm()
+    
+    return render_template('edit_station.html',station_form = station_form)
+
+@app.route('/link/edit_stations/<string:type>', methods=['POST'])
+def edit_stations(type):
+    station_form = LinkStationForm()
+    if request.method == 'POST':
+        if type == "add":
+            for station in station_form.stations:
+                print(station.station.data)
+                print(station.time.data)
+    return redirect('/link')
+
+    
+
+
 @app.route('/link/edit_link/<string:type>', methods=['POST'])
 def edit_link(type):
     form = LinkForm()
@@ -323,6 +343,7 @@ def edit_link(type):
                 db.session.delete(link)
                 db.session.commit()
                 return redirect("/link")
+
 
 @app.route('/vehicle/edit_vehicle/<string:type>', methods=['POST'])
 def edit_vehicle(type):

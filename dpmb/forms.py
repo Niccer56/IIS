@@ -1,6 +1,6 @@
 from flask_admin.contrib.sqla.view import ModelView
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, validators, ValidationError, SelectField, DateField
+from wtforms import StringField, PasswordField, SubmitField, validators, ValidationError, SelectField, DateField, FieldList, FormField
 from wtforms import DateTimeLocalField
 from wtforms.fields.simple import HiddenField
 from dpmb.models import User, Vehicle, Station, Link, Role, StationLink
@@ -40,6 +40,14 @@ class LinkForm(FlaskForm):
     time_first =DateTimeLocalField('First Station Time',format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])
     time_last = DateTimeLocalField('Last Station Time',format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])
     submit = SubmitField(label='Confirm', validators=[validators.InputRequired()])
+
+class CurrentStation(FlaskForm):
+    station = SelectField(u'Current Station: ', choices=Station.getAllStationNames, validators=[validators.InputRequired()])
+    time = DateTimeLocalField('First Station Time',format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])
+
+class LinkStationForm(FlaskForm):
+    stations = FieldList(FormField(CurrentStation),min_entries=2)
+    submit = SubmitField(label='Save Stations', validators=[validators.InputRequired()])
 
 class VehicleForm(FlaskForm):
     id = HiddenField()
