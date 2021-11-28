@@ -43,14 +43,6 @@ class LinkForm(FlaskForm):
     carrierStaff = SelectField(u'Staff: ', choices=Link.getAllOwnersStaff , validators=[validators.InputRequired()])
     submit = SubmitField(label='Confirm', validators=[validators.InputRequired()])
 
-class CurrentStation(FlaskForm):
-    station = SelectField(u'Current Station: ', choices=Station.getAllStationNames, validators=[validators.InputRequired()])
-    time = DateTimeLocalField('First Station Time',format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])
-
-class LinkStationForm(FlaskForm):
-    stations = FieldList(FormField(CurrentStation),min_entries=2)
-    submit = SubmitField(label='Save Stations', validators=[validators.InputRequired()])
-
 class VehicleForm(FlaskForm):
     id = HiddenField()
     vehicle_name = StringField(label='Vehicle Name: ', validators=[validators.InputRequired()])
