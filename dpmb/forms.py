@@ -32,7 +32,7 @@ class StationForm(FlaskForm):
     id = HiddenField()
     name = StringField(label='Zastávka:', validators=[validators.InputRequired()])
     submit = SubmitField(label='Confirm', validators=[validators.InputRequired()])
-
+    owner = SelectField(u'Owner: ', choices=User.getAllCarriersName , validators=[validators.InputRequired()])
 class LinkForm(FlaskForm):
     id = HiddenField()
     start = SelectField(u'Start: ', choices=StationLink.getAllStations, validators=[validators.InputRequired()])
@@ -62,6 +62,7 @@ class UserForm(FlaskForm):
     email = StringField(label='Email: ', validators=[validators.InputRequired()])
     password = PasswordField(label='Password:', validators=[])  
     role = SelectField(u'Role: ', choices=Role.getAllRoles, validators=[validators.InputRequired()])
+    owner = SelectField(u'Owner: ', choices=User.getAllCarriersName , validators=[validators.InputRequired()])
     submit = SubmitField(label='Submit', validators=[validators.InputRequired()])
 
 class SearchForm(FlaskForm):
@@ -69,12 +70,6 @@ class SearchForm(FlaskForm):
     end = SelectField(u'End station: ', choices=StationLink.getAllStations, validators=[validators.InputRequired()])
     time_first =DateTimeLocalField('Choose department time:',format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])
     submit = SubmitField(label='Search for links', validators=[validators.InputRequired()])
-class UserFormCarrier(FlaskForm):
-    id = HiddenField()
-    first_name = StringField(label='First Name: ', validators=[validators.InputRequired()])
-    last_name = StringField(label='Last Name: ', validators=[validators.InputRequired()])
-    email = StringField(label='Email: ', validators=[validators.InputRequired()])
-    password = PasswordField(label='Password:', validators=[])  
-    submit = SubmitField(label='Submit', validators=[validators.InputRequired()])
+
     
 

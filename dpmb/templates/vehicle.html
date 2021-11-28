@@ -50,10 +50,13 @@
 
                     {{ form.vehicle_name.label() }}
                     {{ form.vehicle_name(class="form-control", placeholder="Vehicle Name", value=vehicle[0].vehicle_name) }}
+                    
+                    {% if authorize.has_role('admin') %}
                     {{ form.owner.label() }}
                     <div class="js-carrier">
                       {{ form.owner(class="form-control ", placeholder="Owner's Name") }}
                     </div>
+                    {% endif %}
                     {{ form.current_station.label() }} 
                     <div class="js-station">
                       {{ form.current_station(class="form-control") }}
@@ -113,8 +116,10 @@
               {{ form.vehicle_name(class="form-control", placeholder="Vehicle Name") }}
 
               {{ form.current_station.label() }} {{ form.current_station(class="form-control") }}
+              
+              {% if authorize.has_role('admin') %}
               {{ form.owner.label() }} {{ form.owner(class="form-control") }}
-
+              {% endif %}
             </div>
             <div class="modal-footer text-left">
               {{ form.submit(class="btn btn-primary mt-4") }}

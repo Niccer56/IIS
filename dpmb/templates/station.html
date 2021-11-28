@@ -27,7 +27,11 @@
             <td>
               <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editStation{{station.id}}"><i class="fas fa-edit"></i></button>
               {% if authorize.has_role('admin') %}
-              <button class="btn btn-danger" data-toggle="modal" data-target="#deleteStation{{station.id}}"><i class="fas fa-trash"></i></button>
+              <button class="btn btn-danger mr-2" data-toggle="modal" data-target="#deleteStation{{station.id}}"><i class="fas fa-trash"></i></button>
+              {% if station.verified == False %}
+              <form style="position:relative;" action="{{ url_for('approve_station',id = station.id) }}"></a><button class="btn btn-success"  ><i  class="fas fa-check"></i></button></form>
+
+              {% endif %} 
               {% endif %} 
             </td>
             <!--Edit STATION-->
@@ -48,7 +52,12 @@
                     {{ form.name.label() }}
 
                     {{ form.name(class="form-control", placeholder="Station Name", value=station.name) }}
-
+                    {% if authorize.has_role('admin') %}
+                    {{ form.owner.label() }}
+                    <div class="js-carrier">
+                      {{ form.owner(class="form-control ", placeholder="Owner's Name") }}
+                    </div>
+                    {% endif %}
                   </div>
                   <div class="modal-footer text-left">
                     {{ form.submit(class="btn btn-primary mt-4") }}
@@ -103,7 +112,12 @@
 
             {{ form.name.label() }}
             {{ form.name(class="form-control", placeholder="Station Name") }}
-
+            {% if authorize.has_role('admin') %}
+                    {{ form.owner.label() }}
+                    <div class="js-carrier">
+                      {{ form.owner(class="form-control ", placeholder="Owner's Name") }}
+                    </div>
+                    {% endif %}
       
 
           </div>

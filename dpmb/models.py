@@ -83,8 +83,8 @@ class Station(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), nullable=False)
     links = db.relationship("StationLink", back_populates="station")
-
-    
+    owner = db.Column(db.Integer, db.ForeignKey("users.id"))
+    verified = db.Column(db.Boolean,nullable=False)
 
     def getAllStationNames():
         query = Station.query.all()
