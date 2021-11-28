@@ -14,6 +14,7 @@
           <tr>
             <th scope="col">#</th>
             <th scope="col">Name</th>
+            <th scope="col">Verified</th>
             <th scope="col">Actions</th>
           </tr>
         </thead>
@@ -24,6 +25,12 @@
           <tr>
             <td>{{cnt.value}}</td>
             <td>{{station.name}}</td>
+            {% if station.verified==1 %}
+            <td>{{"yes"}}</td>
+            {% endif %} 
+            {% if station.verified==0 %}
+            <td>{{"no"}}</td>
+            {% endif %} 
             <td>
               <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editStation{{station.id}}"><i class="fas fa-edit"></i></button>
               {% if authorize.has_role('admin') %}

@@ -83,8 +83,8 @@ class StationLink(db.Model):
         query = Station.query.all()
         names = []
         for station in query:
-
-            names.append(station.name)
+            if(station.verified==1):
+                names.append(station.name)
         return names
 class Station(db.Model):
     __tablename__ = 'station'
@@ -99,7 +99,8 @@ class Station(db.Model):
         query = Station.query.all()
         names = []
         for station in query:
-            names.append(station.name)
+            if(station.verified==1):
+                names.append(station.name)
         return names
 
 class Link(db.Model):
