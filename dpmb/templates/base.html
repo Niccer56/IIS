@@ -28,7 +28,7 @@
         <div class="collapse navbar-collapse" id="navbarNav">
             <ul class="navbar-nav mr-auto">
                 <li class="nav-item active">
-                    <a class="nav-link" href="{{ url_for('home_page') }}">Domov<span class="sr-only">(current)</span></a>
+                    <a class="nav-link" href="{{ url_for('home_page') }}">Home<span class="sr-only">(current)</span></a>
                 </li>
 
                 {% if current_user.is_authenticated %}
@@ -36,25 +36,25 @@
                 {% if authorize.has_role('admin','staff') %}
                 
                 <li class="nav-item">
-                    <a class="nav-link" href="{{ url_for('ticket_page') }}">Lístky</a>
+                    <a class="nav-link" href="{{ url_for('ticket_page') }}">Tickets</a>
                 </li>   
                 {% endif %}    
 
                     
                 {% if authorize.has_role('admin','carrier') %}
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('link_page') }}">Spojenia</a>
+                        <a class="nav-link" href="{{ url_for('link_page') }}">Links</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('station_page') }}">Zastávky</a>
+                        <a class="nav-link" href="{{ url_for('station_page') }}">Stations</a>
                     </li>
 
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('vehicle_page') }}">Vozidlá</a>
+                        <a class="nav-link" href="{{ url_for('vehicle_page') }}">Vehicles</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('customer_page') }}">Zákazník</a>
+                        <a class="nav-link" href="{{ url_for('customer_page') }}">Customers</a>
                     </li>
                 
                 {% endif %}
