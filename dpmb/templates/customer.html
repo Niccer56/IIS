@@ -39,7 +39,7 @@
               <div class="modal-dialog" role="document">
                 <div class="modal-content">
                   <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Edit Station</h5>
+                    <h5 class="modal-title" id="exampleModalLabel">Edit User</h5>
                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                       <span aria-hidden="true">&times;</span>
                     </button>
@@ -48,6 +48,7 @@
                   <div class="modal-body">
 
                     <input type="hidden" name="id" value={{ customer.id }}>
+                    {% if authorize.has_role('admin') %}
                     {{ form.first_name.label() }}
                     {{ form.first_name(class="form-control", placeholder="User Name", value=customer.first_name) }}
                     {{ form.last_name.label() }}
@@ -59,7 +60,21 @@
                     <div class="js-user-type">
                       {{ form.role.label() }} {{ form.role(class="form-control") }}
                     </div>
-
+                    {% endif %}
+                    {% if authorize.has_role('carrier') %}
+                    
+                    {{ form.first_name.label() }}
+                    {{ form.first_name(class="form-control", placeholder="User Name", value=customer.first_name) }}
+                    {{ form.last_name.label() }}
+                    {{ form.last_name(class="form-control", placeholder="Last Name", value=customer.last_name) }}
+                    {{ form.email.label() }}
+                    {{ form.email(class="form-control", placeholder="Email", value=customer.email) }}
+                    {{ form.password.label() }}
+                    {{ form.password(class="form-control", placeholder="Password", value=customer.password) }}
+                    
+                    {% endif %}  
+                    
+                    
                   </div>
                   <div class="modal-footer text-left">
                     {{ form.submit(class="btn btn-primary mt-4") }}
@@ -110,15 +125,30 @@
         <form action="/customer/edit_customer/add" method="POST" class="form-register">
           <div class="modal-body">
 
-            {{ form.first_name.label() }}
-            {{ form.first_name(class="form-control", placeholder="User Name") }}
-            {{ form.last_name.label() }}
-            {{ form.last_name(class="form-control", placeholder="Last Name") }}
-            {{ form.email.label() }}
-            {{ form.email(class="form-control", placeholder="Email") }}
-            {{ form.password.label() }}
-            {{ form.password(class="form-control", placeholder="Password") }}
-            {{ form.role.label() }} {{ form.role(class="form-control") }}
+                    {% if authorize.has_role('admin') %}
+                    {{ form.first_name.label() }}
+                    {{ form.first_name(class="form-control", placeholder="User Name") }}
+                    {{ form.last_name.label() }}
+                    {{ form.last_name(class="form-control", placeholder="Last Name") }}
+                    {{ form.email.label() }}
+                    {{ form.email(class="form-control", placeholder="Email") }}
+                    {{ form.password.label() }}
+                    {{ form.password(class="form-control", placeholder="Password") }}
+                    <div class="js-user-type">
+                      {{ form.role.label() }} {{ form.role(class="form-control") }}
+                    </div>
+                    {% endif %}
+                    {% if authorize.has_role('carrier') %}
+                    {{ form.first_name.label() }}
+                    {{ form.first_name(class="form-control", placeholder="User Name") }}
+                    {{ form.last_name.label() }}
+                    {{ form.last_name(class="form-control", placeholder="Last Name") }}
+                    {{ form.email.label() }}
+                    {{ form.email(class="form-control", placeholder="Email") }}
+                    {{ form.password.label() }}
+                    {{ form.password(class="form-control", placeholder="Password") }}
+                      
+                    {% endif %} 
 
       
 

@@ -60,7 +60,7 @@ class UserForm(FlaskForm):
     first_name = StringField(label='First Name: ', validators=[validators.InputRequired()])
     last_name = StringField(label='Last Name: ', validators=[validators.InputRequired()])
     email = StringField(label='Email: ', validators=[validators.InputRequired()])
-    password = StringField(label='Password: ', validators=[validators.InputRequired()])    
+    password = PasswordField(label='Password:', validators=[])  
     role = SelectField(u'Role: ', choices=Role.getAllRoles, validators=[validators.InputRequired()])
     submit = SubmitField(label='Submit', validators=[validators.InputRequired()])
 
@@ -69,3 +69,12 @@ class SearchForm(FlaskForm):
     end = SelectField(u'End station: ', choices=StationLink.getAllStations, validators=[validators.InputRequired()])
     time_first =DateTimeLocalField('Choose department time:',format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])
     submit = SubmitField(label='Search for links', validators=[validators.InputRequired()])
+class UserFormCarrier(FlaskForm):
+    id = HiddenField()
+    first_name = StringField(label='First Name: ', validators=[validators.InputRequired()])
+    last_name = StringField(label='Last Name: ', validators=[validators.InputRequired()])
+    email = StringField(label='Email: ', validators=[validators.InputRequired()])
+    password = PasswordField(label='Password:', validators=[])  
+    submit = SubmitField(label='Submit', validators=[validators.InputRequired()])
+    
+

@@ -29,7 +29,7 @@ class User(db.Model, UserMixin):
     email = db.Column(db.String(120), unique=True, nullable=False)
     password = db.Column(db.String(80), nullable=False)
     roles = db.relationship('Role', secondary=UserRole)
-
+    owner = db.Column(db.Integer, nullable=False)
     def password_check(self, unhashed_pwd):
         return bcrypt.check_password_hash(self.password, unhashed_pwd)
 
@@ -40,6 +40,12 @@ class User(db.Model, UserMixin):
             names.append(f"{carrier.email}")
         return names
 
+    def getAllCarriersId():
+        carriers = User.query.join(User.roles).filter_by(name="carrier").all()
+        names = []
+        for carrier in carriers:
+            names.append(f"{carrier.id}")
+        return names
     def getAllEmails():
         query = User.query.all()
         names = []

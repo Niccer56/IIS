@@ -32,12 +32,7 @@
                 </li>
 
                 {% if current_user.is_authenticated %}
-                {% if authorize.has_role('admin') %}
-
-                    <li class="nav-item">
-                        <a class="nav-link" href="{{ url_for('customer_page') }}">Zákazník</a>
-                    </li>
-                {% endif %}        
+                       
                 {% if authorize.has_role('admin','staff') %}
                 
                 <li class="nav-item">
@@ -58,7 +53,9 @@
                     <li class="nav-item">
                         <a class="nav-link" href="{{ url_for('vehicle_page') }}">Vozidlá</a>
                     </li>
-
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('customer_page') }}">Zákazník</a>
+                    </li>
                 
                 {% endif %}
                 {% endif %}

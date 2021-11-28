@@ -1,9 +1,9 @@
 from flask_login.utils import logout_user
 from dpmb.models import db, User, Role, Ticket, Link, Station, Vehicle, StationLink
-from dpmb.forms import LinkForm, LoginForm, RegisterForm, EditForm, SearchForm, VehicleForm, StationForm, TicketForm, UserForm
+from dpmb.forms import LinkForm, LoginForm, RegisterForm, EditForm, VehicleForm,SearchForm, StationForm, TicketForm, UserForm, UserFormCarrier
 from flask import render_template, flash, request, redirect
 from dpmb import app, login_manager, authorize
-from flask_login import login_user, login_required
+from flask_login import login_user, login_required, current_user
 from dpmb import bcrypt
 from datetime import datetime
 
@@ -41,14 +41,29 @@ def found_links():
 #@authorize.has_role("admin")
 def customer_page():
     
-    form = UserForm()
-    user = User.query.all()
+    
+    
     roles = Role.query.all()
     types = []
-    for role in roles:
-        types.append(role.name)
-
-    return render_template('customer.html', customers=user, usertype=types, form = form)
+    if (authorize.has_role("admin")):
+        form = UserForm()
+        user = User.query.all()
+        for role in roles:
+            types.append(role.name)
+    
+        return render_template('customer.html', customers=user, usertype=types, form = form)
+    elif (authorize.has_role("carrier")):
+        form = UserFormCarrier()
+        user = User.query.join(User.roles).filter_by(name="staff").all()
+        staffList = []
+        for staff in user:
+            if (current_user.id == staff.owner):
+                staffList.append(staff)
+                for role in roles:
+            
+                    types.append(role.name)
+    
+        return render_template('customer.html', customers=staffList, usertype=types, form = form)    
 
 @app.route('/ticket', methods=['GET', 'POST'])
 #@login_required
@@ -113,6 +128,7 @@ def login_page():
                 flash("Invalid login credentials")
                 return render_template('login.html', form=form)
             login_user(user)
+            
             return redirect("/home")
         else:
             for err in form.errors:
@@ -137,6 +153,7 @@ def register_page():
             reg.first_name = form.first_name.data.strip()
             reg.last_name = form.last_name.data.strip()
             reg.email = form.email.data.strip()
+            reg.owner = 0
             reg.password = bcrypt.generate_password_hash(form.password1.data)
             role = Role.query.filter_by(name="user").first()
             reg.roles = [role]
@@ -174,27 +191,38 @@ def edit_station(type):
 
 @app.route('/customer/edit_customer/<string:type>', methods=['POST'])
 def edit_customer(type):
-    form = UserForm()
+    if (authorize.has_role("admin")):
+        form = UserForm()
+    elif (authorize.has_role("carrier")):   
+        form = UserFormCarrier() 
     if request.method == 'POST':
         if type == "add":
             data = User()
             data.first_name = form.first_name.data.strip()
             data.last_name = form.last_name.data.strip()
             data.email = form.email.data.strip()
-            data.password = form.password.data
-            role = Role.query.filter_by(name=form.role.data).first()
+            data.password = bcrypt.generate_password_hash(form.password.data)
+            if (authorize.has_role("admin")):
+                role = Role.query.filter_by(name=form.role.data).first()
+            elif (authorize.has_role("carrier")):
+                role = Role.query.filter_by(name="staff").first()    
             data.roles = [role]
+            data.owner = current_user.id 
             db.session.add(data)
             db.session.commit()
             return redirect("/customer")
         elif type == "edit":
-            role = Role.query.filter_by(name=form.role.data).first()
+            if (authorize.has_role("admin")):
+                role = Role.query.filter_by(name=form.role.data).first()
+            elif (authorize.has_role("carrier")):
+                role = Role.query.filter_by(name="staff").first()     
             toedit = User.query.filter_by(id=form.id.data).first()
             toedit.first_name = form.first_name.data
             toedit.last_name = form.last_name.data
             toedit.email = form.email.data
-            toedit.password = form.password.data
+            toedit.password = bcrypt.generate_password_hash(form.password.data)
             toedit.roles = [role]
+            toedit.owner = form.owner.data
             db.session.commit()
             return redirect("/customer")
         elif type == "delete":
@@ -325,5 +353,6 @@ def edit_vehicle(type):
 
 
 if __name__ == '__main__':
-
+    
+        
     app.run(debug=True)
