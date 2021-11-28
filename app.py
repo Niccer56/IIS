@@ -1,9 +1,9 @@
 from flask_login.utils import logout_user
 from dpmb.models import db, User, Role, Ticket, Link, Station, Vehicle, StationLink
-from dpmb.forms import LinkForm, LoginForm, RegisterForm, EditForm, SearchForm, VehicleForm, StationForm, TicketForm, UserForm
+from dpmb.forms import LinkForm, LoginForm, RegisterForm, EditForm, VehicleForm,SearchForm, StationForm, TicketForm, UserForm
 from flask import render_template, flash, request, redirect
 from dpmb import app, login_manager, authorize
-from flask_login import login_user, login_required
+from flask_login import login_user, login_required, current_user
 from dpmb import bcrypt
 from datetime import datetime
 
@@ -42,14 +42,27 @@ def found_links():
 #@authorize.has_role("admin")
 def customer_page():
     
-    form = UserForm()
-    user = User.query.all()
     roles = Role.query.all()
     types = []
-    for role in roles:
-        types.append(role.name)
+    if (authorize.has_role("admin")):
+        form = UserForm()
+        user = User.query.all()
+        for role in roles:
+            types.append(role.name)
 
-    return render_template('customer.html', customers=user, usertype=types, form = form)
+        return render_template('customer.html', customers=user, usertype=types, form = form)
+    elif (authorize.has_role("carrier")):
+        form = UserForm()
+        user = User.query.join(User.roles).filter_by(name="staff").all()
+        staffList = []
+        for staff in user:
+            if (current_user.id == staff.owner):
+                staffList.append(staff)
+                for role in roles:
+
+                    types.append(role.name)
+
+        return render_template('customer.html', customers=staffList, usertype=types, form = form)  
 
 @app.route('/ticket', methods=['GET', 'POST'])
 #@login_required
@@ -70,12 +83,21 @@ def vehicle_page():
     form = VehicleForm()
     vehicle = Vehicle.query.all()
     vehicles = []
-    for current in vehicle:
-        query_station = Station.query.filter_by(id=current.current_station).first().name
-        query_carrier = User.query.filter_by(id=current.owner).first().email
-        vehicles.append([current, query_station, query_carrier])
+    if (authorize.has_role("admin")):
+        for current in vehicle:
+            query_station = Station.query.filter_by(id=current.current_station).first().name
+            query_carrier = User.query.filter_by(id=current.owner).first().email
+            vehicles.append([current, query_station, query_carrier])
 
-    return render_template('vehicle.html', vehicles=vehicles, form=form)
+        return render_template('vehicle.html', vehicles=vehicles, form=form)
+    elif (authorize.has_role("carrier")):
+        for current in vehicle:
+            if (current_user.id == current.owner):        
+                query_station = Station.query.filter_by(id=current.current_station).first().name
+                query_carrier = User.query.filter_by(id=current.owner).first().email
+                vehicles.append([current, query_station, query_carrier])
+
+        return render_template('vehicle.html', vehicles=vehicles, form=form)
 
 @app.route('/station', methods=['GET', 'POST'])
 #@login_required
@@ -83,26 +105,47 @@ def vehicle_page():
 def station_page():
     form = StationForm()
     station = Station.query.all()
-    return render_template('station.html', stations=station, form=form)
+    if (authorize.has_role("admin")):
+    
+        return render_template('station.html', stations=station, form=form)
+    elif (authorize.has_role("carrier")):
+        ownStations = []
+        for current in station:
+            if (current_user.id == current.owner):
+                ownStations.append(current)
+        return render_template('station.html', stations=ownStations, form=form)  
 
 @app.route('/link', methods=['GET', 'POST'])
 #@login_required
 #@authorize.has_role("admin", "carrier")
 def link_page():
     query = Link.query.all()
-    stations = Station.query.all()
+
     
     form = LinkForm()
     names = []
-    for link in query:
-        links = [] 
-        links.append([Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
-        
-        for station in links:
-            
-            names.append([station[0].name + " "  + link.time_first.strftime("%m/%d/%Y, %H:%M"),station[1].name + " " + link.time_last.strftime("%m/%d/%Y, %H:%M"),link.id ])   
-            
-    return render_template('link.html', links=names, form = form, stations=stations)
+    if (authorize.has_role("admin")):
+
+        for link in query:
+            links = [] 
+            links.append([Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
+
+            for station in links:
+
+                names.append([station[0].name + " "  + link.time_first.strftime("%m/%d/%Y, %H:%M"),station[1].name + " " + link.time_last.strftime("%m/%d/%Y, %H:%M"),link.id ])   
+
+        return render_template('link.html', links=names, form = form)
+
+    if (authorize.has_role("carrier")):
+        crrier = []
+        for link in query:
+            staff= User.query.filter_by(id=link.staff).first() 
+            if (staff.owner == current_user.id):
+                links = [] 
+                links.append([Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
+                for station in links:
+                    names.append([station[0].name + " "  + link.time_first.strftime("%m/%d/%Y, %H:%M"),station[1].name + " " + link.time_last.strftime("%m/%d/%Y, %H:%M"),link.id ])
+        return render_template('link.html', links=names, form = form)      
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
@@ -139,10 +182,12 @@ def register_page():
             reg.last_name = form.last_name.data.strip()
             reg.email = form.email.data.strip()
             reg.password = bcrypt.generate_password_hash(form.password1.data)
+            reg.owner = 0
             role = Role.query.filter_by(name="user").first()
             reg.roles = [role]
             db.session.add(reg)
             db.session.commit()
+
             return redirect("/login")
         else:
             for err in form.errors:
@@ -161,7 +206,12 @@ def edit_station(type):
     if request.method == 'POST':
         if type == "add":
             data = Station()
-
+            if (authorize.has_role("admin")):
+                data.owner = User.query.filter_by(email=form.owner.data).first().id
+                data.verified = True
+            elif (authorize.has_role("carrier")):
+                data.owner = current_user.id
+                data.verified = False 
             data.name = form.name.data.strip()
             db.session.add(data)
             db.session.commit()
@@ -169,6 +219,11 @@ def edit_station(type):
         elif type == "edit":
 
             toedit = Station.query.filter_by(id=form.id.data).first()
+            if (authorize.has_role("admin")):
+                toedit.owner = User.query.filter_by(email=form.owner.data).first().id
+            elif (authorize.has_role("carrier")):
+                toedit.owner = current_user.id 
+                toedit.verified = False  
             toedit.name = form.name.data.strip()
             db.session.commit()
             return redirect("/station")
@@ -200,6 +255,14 @@ def edit_station(type):
                 db.session.commit()
                 return redirect("/station")
 
+@app.route('/station/approve/<int:id>', methods=['POST', 'GET'])
+def approve_station(id):
+
+    toedit = Station.query.filter_by(id=id).first()
+    toedit.verified = True
+    db.session.commit()
+    return redirect("/station")
+
 @app.route('/customer/edit_customer/<string:type>', methods=['POST'])
 def edit_customer(type):
     form = UserForm()
@@ -209,19 +272,29 @@ def edit_customer(type):
             data.first_name = form.first_name.data.strip()
             data.last_name = form.last_name.data.strip()
             data.email = form.email.data.strip()
-            data.password = form.password.data
-            role = Role.query.filter_by(name=form.role.data).first()
+            data.password = bcrypt.generate_password_hash(form.password.data)
+            if (authorize.has_role("admin")):
+                role = Role.query.filter_by(name=form.role.data).first()
+                data.owner = form.owner.data
+            elif (authorize.has_role("carrier")):
+                role = Role.query.filter_by(name="staff").first()  
+                data.owner = current_user.id 
             data.roles = [role]
             db.session.add(data)
             db.session.commit()
             return redirect("/customer")
         elif type == "edit":
-            role = Role.query.filter_by(name=form.role.data).first()
+        
             toedit = User.query.filter_by(id=form.id.data).first()
+            if (authorize.has_role("carrier")):
+                role = Role.query.filter_by(name="staff").first()     
+            elif (authorize.has_role("admin")):
+                role = Role.query.filter_by(name=form.role.data).first()
+                toedit.owner = User.query.filter_by(email=form.owner.data).first().id
             toedit.first_name = form.first_name.data
             toedit.last_name = form.last_name.data
             toedit.email = form.email.data
-            toedit.password = form.password.data
+            toedit.password = bcrypt.generate_password_hash(form.password.data)
             toedit.roles = [role]
             db.session.commit()
             return redirect("/customer")
@@ -285,13 +358,17 @@ def edit_link(type):
             stationlink_last.station = station
             stationlink_last.time = form.time_last.data
 
+            if (authorize.has_role("admin")):
+                data.staff = User.query.filter_by(email=form.staff.data).first().id 
+            elif (authorize.has_role("carrier")):
+                data.staff = User.query.filter_by(email=form.carrierStaff.data).first().id  
             data.stations.append(stationlink_first)
             data.stations.append(stationlink_last)
             db.session.add(data)
             db.session.commit()
             return redirect("/link")
         elif type == "edit":
-            print(request.get_data())
+            
             toedit = Link.query.filter_by(id=form.id.data).first()
             sorted_stations = StationLink.query.filter_by(link_id=form.id.data).all()
             sorted_stations.sort(key=lambda x: x.time,reverse=True)
@@ -304,7 +381,10 @@ def edit_link(type):
             nameend = form.end.data.partition(" ")[0]
             station = Station.query.filter_by(name=nameend).first()
             toedit.end = station.id
-            
+            if (authorize.has_role("admin")):
+                toedit.staff = User.query.filter_by(email=form.staff.data).first().id 
+            elif (authorize.has_role("carrier")):
+                toedit.staff = User.query.filter_by(email=form.carrierStaff.data).first().id 
             toedit.time_first = form.time_first.data
             toedit_station1.time = form.time_first.data
             toedit_station2.time = form.time_last.data
@@ -348,7 +428,10 @@ def edit_vehicle(type):
         if type == "add":
             data = Vehicle()
             data.vehicle_name = form.vehicle_name.data.strip()
-            data.owner = User.query.filter_by(email=form.owner.data).first().id
+            if (authorize.has_role("admin")):
+                data.owner = User.query.filter_by(email=form.owner.data).first().id
+            elif (authorize.has_role("carrier")):
+                data.owner = current_user.id 
             data.current_station = Station.query.filter_by(name=form.current_station.data).first().id
             db.session.add(data)
             db.session.commit()
@@ -357,7 +440,8 @@ def edit_vehicle(type):
 
             toedit = Vehicle.query.filter_by(id=form.id.data).first()
             toedit.vehicle_name = form.vehicle_name.data
-            toedit.owner = User.query.filter_by(email=form.owner.data).first().id
+            if (authorize.has_role("admin")):
+                toedit.owner = User.query.filter_by(email=form.owner.data).first().id
             toedit.current_station = Station.query.filter_by(name=form.current_station.data).first().id
             db.session.commit()
             return redirect("/vehicle")

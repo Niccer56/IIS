@@ -59,7 +59,19 @@
                     </div>
                     {{ form.time_first.label() }} {{ form.time_first(class="form-control") }}
                     {{ form.time_last.label() }} {{ form.time_last(class="form-control") }}
+                    {% if authorize.has_role('admin') %}
+                    {{ form.staff.label() }}
+                    <div class="js-carrier">
+                      {{ form.staff(class="form-control ", placeholder="Staff's Name") }}
+                    </div>
+                    {% endif %}
 
+                    {% if authorize.has_role('carrier') %}
+                    {{ form.carrierStaff.label() }}
+                    <div class="js-carrier">
+                      {{ form.carrierStaff(class="form-control ", placeholder="Staff's Name") }}
+                    </div>
+                    {% endif %}
                   </div>
                   <div class="modal-footer text-left">
                     {{ form.submit(class="btn btn-primary mt-4") }}
@@ -137,7 +149,19 @@
             {{ form.end.label() }} {{ form.end(class="form-control") }}
             {{ form.time_first.label() }} {{ form.time_first(class="form-control") }}
             {{ form.time_last.label() }} {{ form.time_last(class="form-control") }}
+            {% if authorize.has_role('admin') %}
+                    {{ form.staff.label() }}
+                    <div class="js-carrier">
+                      {{ form.staff(class="form-control ", placeholder="Staff's Name") }}
+                    </div>
+                    {% endif %}
 
+                    {% if authorize.has_role('carrier') %}
+                    {{ form.carrierStaff.label() }}
+                    <div class="js-carrier">
+                      {{ form.carrierStaff(class="form-control ", placeholder="Staff's Name") }}
+                    </div>
+                    {% endif %}
       
 
           </div>
