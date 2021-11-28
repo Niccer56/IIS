@@ -1,6 +1,6 @@
 from flask_login.utils import logout_user
 from dpmb.models import db, User, Role, Ticket, Link, Station, Vehicle, StationLink
-from dpmb.forms import LinkForm, LoginForm, RegisterForm, EditForm, VehicleForm, StationForm, TicketForm, UserForm
+from dpmb.forms import LinkForm, LoginForm, RegisterForm, EditForm, SearchForm, VehicleForm, StationForm, TicketForm, UserForm
 from flask import render_template, flash, request, redirect
 from dpmb import app, login_manager, authorize
 from flask_login import login_user, login_required
@@ -14,7 +14,27 @@ def load_user(user_id):
 @app.route('/')
 @app.route('/home')
 def home_page():
-    return render_template('home.html')
+    form = SearchForm()
+    return render_template('home.html', form=form)
+
+
+@app.route('/home/search', methods=['POST'])
+def find_links():
+    form = SearchForm()
+    if request.method == 'POST':
+        display_content = []
+        start_station_id = Station.query.filter_by(name=form.start.data).first().id
+        start_station_end = Station.query.filter_by(name=form.end.data).first().id
+        links = Link.query.filter_by(start=start_station_id, end=start_station_end).all()
+        display_content.append(form.start.data)
+        display_content.append(form.end.data)
+        return render_template('searched_links.html',links=links, display_content=display_content)
+
+@app.route('/home/searched_links', methods=['POST'])
+def found_links():
+
+    return redirect("/home/searched_links")
+
 
 @app.route('/customer', methods=['GET', 'POST'])
 #@login_required
@@ -34,7 +54,6 @@ def customer_page():
 #@login_required
 #@authorize.has_role("admin", "staff")
 def ticket_page():
-    db.session.commit()
     form = TicketForm()
     query = Ticket.query.all()
     tickets = []
@@ -47,7 +66,6 @@ def ticket_page():
 #@login_required
 #@authorize.has_role("admin", "carrier")
 def vehicle_page():
-    db.session.commit()
     form = VehicleForm()
     vehicle = Vehicle.query.all()
     vehicles = []
@@ -62,7 +80,6 @@ def vehicle_page():
 #@login_required
 #@authorize.has_role("admin", "carrier")
 def station_page():
-    db.session.commit()
     form = StationForm()
     station = Station.query.all()
     return render_template('station.html', stations=station, form=form)
@@ -71,7 +88,6 @@ def station_page():
 #@login_required
 #@authorize.has_role("admin", "carrier")
 def link_page():
-    db.session.commit()
     query = Link.query.all()
     
     

@@ -32,6 +32,7 @@
             {% set split_name2 = namespace(value="") %}
             {% set split_name.value = link[0].split(" ", 1)[0] %}
             {% set split_name2.value = link[1].split(" ", 1)[0] %}
+            <button class="btn btn-primary mr-2" data-toggle="modal" data-target="#StationsLink{{link[2]}}"><i class="fas fa-home"></i></button>
             <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editLink{{link[2]}}" onclick="selected('{{split_name.value}}','{{split_name2.value}}')"><i class="fas fa-edit"></i></button>
             <button class="btn btn-danger" data-toggle="modal" data-target="#deleteLink{{link[2]}}"><i class="fas fa-trash"></i></button>
             </td>
@@ -64,6 +65,78 @@
                     {{ form.submit(class="btn btn-primary mt-4") }}
                   </div>
                 </form>
+                </div>
+              </div>
+            </div>
+
+            <!--Stations Link-->
+            <div class="modal fade" id="StationsLink{{link[2]}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+              <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                  <div class="modal-header">
+                    <h5 class="modal-title" id="exampleModalLabel">Add or Edit Stations</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                      <span aria-hidden="true">&times;</span>
+                    </button>
+                  </div>
+
+                  <!-- HIDDEN DYNAMIC ELEMENT TO CLONE -->
+                  <!-- you can replace it with any other elements -->
+                  <div class="form-group dynamic-element" style="display:none">
+                    <div class="row">
+                    <div class="col-md-2"></div>
+                      
+                    <!-- Replace these fields -->
+                    <div class="col-md-4">
+                      <select id="profesor" name="profesor[]" class="form-control">
+                        <option value="1">Profesor</option>
+                      </select>
+                    </div>
+                    <div class="col-md-3">
+                      <select id="rol" name="rol[]" class="form-control">
+                        <option>Rol</option>
+                        <option value="1">Guia</option>
+                        <option value="2">Co-Guia</option>
+                        <option value="3">Presidente</option>
+                        <option value="4">Invitado</option>
+                      </select>
+                    </div>
+                      <!-- End of fields-->
+                      <div class="col-md-1">
+                        <p class="delete">x</p>
+                      </div>
+                    </div>
+                  </div>
+                  <!-- END OF HIDDEN ELEMENT -->
+
+                  <div class="form-container">
+                    <form class="form-horizontal">
+                    <fieldset>
+                    <!-- Form Name -->
+                    <legend class="title">Save Stations</legend>
+
+                    <div class="dynamic-stuff">
+                      <!-- Dynamic element will be cloned here -->
+                      <!-- You can call clone function once if you want it to show it a first element-->
+                    </div>
+                    
+                    <!-- Button -->
+                    <div class="form-group">
+                      <div class="row">
+                        <div class="col-md-12">
+                            <p class="add-one">+ Añadir Profesor</p>
+                        </div>
+                      <div class="col-md-5"></div>
+                        <div class="col-md-6">
+                          <button id="singlebutton" name="singlebutton" class="btn btn-primary">Guardar Comisión</button>
+                        </div>
+                      </div>
+                    </div>
+                  </fieldset>
+                  </form>
+                  </div>
+
+
                 </div>
               </div>
             </div>
@@ -135,6 +208,21 @@
         $('.js-station-end option:selected').removeAttr("selected");
         $('.js-station-end option[value="'+val2+'"]').attr('selected','selected');
       }
+      //Clone the hidden element and shows it
+      $('.add-one').click(function(){
+        $('.dynamic-element').first().clone().appendTo('.dynamic-stuff').show();
+        attach_delete();
+      });
+
+
+      //Attach functionality to delete buttons
+      function attach_delete(){
+        $('.delete').off();
+        $('.delete').click(function(){
+          console.log("click");
+          $(this).closest('.form-group').remove();
+        });
+      }
     </script>
     <style>
 
@@ -147,6 +235,50 @@
 
       td {
           border: 1px solid #ccc;
+      }
+
+      .form-container{
+        padding:10px;
+        padding-bottom:25px;
+        margin:0 auto;
+        margin-top:20px;
+        width:50%;
+        border-radius:20px;
+        background-color: #ececec;
+      }
+
+      .add-one{
+        color:green;
+        text-align:center;
+        font-weigth:bolder;
+        cursor:pointer;
+        margin-top:10px;
+      }
+
+      .delete{
+        color:white;
+        background-color:rgb(231, 76, 60);
+        text-align:center;
+        margin-top:6px;
+        font-weight:700;
+        border-radius:5px;
+        min-width:20px;
+        cursor:pointer;
+      }
+
+      #singlebutton{
+        width:100%;
+        margin-top:20px;
+      }
+
+      .title{
+        text-align:center;
+        font-size:40px;
+        margin-bottom:40px;
+      }
+
+      .dynamic-element{
+        margin-bottom:0px;
       }
 
 

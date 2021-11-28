@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    DPMB - searched links
+{% endblock title %}
+
+{% block mainContent %}
+    <div class="row justify-content-center mt-4">
+
+        <div class="jumbotron jumbotron-fluid w-50">
+            <div class="container">
+                <h1 class="display-5 text-center mb-4">Vyhľadané spoje</h1>
+                {% if links %}
+                    {% for link in links %}
+                
+                    <div class="card bg-light link-box">
+                        <div class="card-header">
+                            <div class="row justify-content-start">
+                                <div class="col-5">
+                                    {{link.time_first.date()}}
+                                </div>
+                                <div class="col-5">
+                                    {{display_content[0]}} - {{display_content[1]}}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="card-body text-center">
+                            <div class="row justify-content-start">
+                                <div class="col-12">
+                                    <i class="fas fa-bus-alt"></i>
+                                    <ul class="text-left">
+                                        <li> 
+                                            <div class="row justify-content-start">
+                                                <div class="col-3">
+                                                    <p class="card-text ml-2">{{display_content[0]}}</p>
+                                                </div>
+                                                <div class="col-7">
+                                                    <p class="card-text">{{link.time_first.strftime("%H:%M")}}</p>
+                                                </div>
+                                            </div>
+                                           
+                                        </li> 
+                                        <li> 
+
+                                            <div class="row justify-content-start">
+                                                <div class="col-3">
+                                                    <p class="card-text ml-2">{{display_content[1]}}</p>
+                                                </div>
+                                                <div class="col-7">
+                                                    <p class="card-text">{{link.time_last.strftime("%H:%M")}}</p>
+                                                </div>
+                                            </div>
+                                            
+                                        </li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+                {% else %}
+                    <div class="card-body text-center">
+                        <div class="text-center">
+                            <h3>Links not Found :/ Try it again</h3>
+                        </div>
+                    </div>
+                {% endif %}
+                
+                
+                
+            </div>
+        </div>
+
+    </div>
+
+    <style>
+
+        .link-box {
+            border-radius: 5px;
+            box-shadow: 0 2px 10px rgb(21 101 150 / 38%);
+            margin: 0 0 10px;
+        }
+        .fa-bus-alt {
+            margin-right: 100%;
+        }
+
+    </style>
+    
+{% endblock mainContent %}

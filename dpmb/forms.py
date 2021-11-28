@@ -63,3 +63,9 @@ class UserForm(FlaskForm):
     password = StringField(label='Password: ', validators=[validators.InputRequired()])    
     role = SelectField(u'Role: ', choices=Role.getAllRoles, validators=[validators.InputRequired()])
     submit = SubmitField(label='Submit', validators=[validators.InputRequired()])
+
+class SearchForm(FlaskForm):
+    start = SelectField(u'Start station: ', choices=StationLink.getAllStations, validators=[validators.InputRequired()])
+    end = SelectField(u'End station: ', choices=StationLink.getAllStations, validators=[validators.InputRequired()])
+    time_first =DateTimeLocalField('Choose department time:',format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])
+    submit = SubmitField(label='Search for links', validators=[validators.InputRequired()])
