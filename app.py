@@ -135,8 +135,8 @@ def link_page():
             links.append([Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
 
             for station in links:
-
-                names.append([station[0].name + " "  + link.time_first.strftime("%m/%d/%Y, %H:%M"),station[1].name + " " + link.time_last.strftime("%m/%d/%Y, %H:%M"),link.id ])   
+                staff = User.query.filter_by(id=link.staff).first() 
+                names.append([station[0].name + " "  + link.time_first.strftime("%m/%d/%Y, %H:%M"),station[1].name + " " + link.time_last.strftime("%m/%d/%Y, %H:%M"),link.id, staff.email ])   
 
         return render_template('link.html', links=names, form = form)
 
@@ -148,7 +148,7 @@ def link_page():
                 links = [] 
                 links.append([Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
                 for station in links:
-                    names.append([station[0].name + " "  + link.time_first.strftime("%m/%d/%Y, %H:%M"),station[1].name + " " + link.time_last.strftime("%m/%d/%Y, %H:%M"),link.id ])
+                    names.append([station[0].name + " "  + link.time_first.strftime("%m/%d/%Y, %H:%M"),station[1].name + " " + link.time_last.strftime("%m/%d/%Y, %H:%M"),link.id, staff.email ])
         return render_template('link.html', links=names, form = form)      
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -455,5 +455,5 @@ def edit_vehicle(type):
 
 
 if __name__ == '__main__':
-
+         
     app.run(debug=True)
