@@ -115,15 +115,15 @@ class Link(db.Model):
     staff = db.Column(db.Integer, db.ForeignKey("users.id"))
    # vehicle =   db.Column(db.Integer, db.ForeignKey("vehicle.id"))
     def getAllOwnersStaff():
-        query = Link.query.all()
+       
+        names = []  
         
-        users = []
-        for link in query:
-            names = []
-            staff= current_user.id
-            users=User.query.filter_by(owner=staff).all()
-            for user in users:
-                names.append(f"{user.email}")
+
+        staff= current_user.id
+        users=User.query.filter_by(owner=staff).all()
+        for user in users:
+                
+            names.append(f"{user.email}")
         return names
 
     def getAllLinks():
