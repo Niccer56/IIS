@@ -1,6 +1,6 @@
 from flask_login.utils import logout_user
 from dpmb.models import db, User, Role, Ticket, Link, Station, Vehicle, StationLink
-from dpmb.forms import LinkForm, LinkStationForm, LoginForm, RegisterForm, EditForm, VehicleForm,SearchForm, StationForm, TicketForm, UserForm, UserFormCarrier
+from dpmb.forms import LinkForm, LinkStationForm, LoginForm, RegisterForm, EditForm, VehicleForm,SearchForm, StationForm, TicketForm, UserForm
 from flask import render_template, flash, request, redirect
 from dpmb import app, login_manager, authorize
 from flask_login import login_user, login_required, current_user
