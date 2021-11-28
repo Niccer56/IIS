@@ -6,8 +6,8 @@ from wtforms.fields.simple import HiddenField
 from dpmb.models import User, Vehicle, Station, Link, Role, StationLink
 class RegisterForm(FlaskForm):
 
-    first_name = StringField(label='Meno:', validators=[validators.InputRequired()])
-    last_name = StringField(label='Priezivko:', validators=[validators.InputRequired()])
+    first_name = StringField(label='First name:', validators=[validators.InputRequired()])
+    last_name = StringField(label='Last Name:', validators=[validators.InputRequired()])
     email = StringField(label='Email:', validators=[
         validators.InputRequired(),
         validators.Email(message="Please select a valid email address")])
@@ -15,7 +15,7 @@ class RegisterForm(FlaskForm):
     password2 = PasswordField(label='Potvrďte heslo:', validators=[
         validators.InputRequired(),
         validators.EqualTo("password1", message="Passwords don't match")])
-    submit = SubmitField(label='Vytvoriť účet:', validators=[validators.InputRequired()])
+    submit = SubmitField(label='Create Account:', validators=[validators.InputRequired()])
 
 class EditForm(RegisterForm):
     password1 = PasswordField(label='Heslo:')
