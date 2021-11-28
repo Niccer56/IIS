@@ -174,6 +174,27 @@ def edit_station(type):
             return redirect("/station")
         elif type == "delete":
             station = Station.query.filter_by(id=form.id.data).first()
+            
+            links = Link.query.filter_by(start=station.id).all()
+            if len(links) > 0:
+                for link in links:
+                    tickets = Ticket.query.filter_by(linkid=link.id).all()
+                    if len(tickets) > 0:
+                        for ticket in tickets:
+                            db.session.delete(ticket)
+            if len(links) > 0:
+                for link in links:
+                    db.session.delete(link)
+            links = Link.query.filter_by(end=station.id).all()
+            if len(links) > 0:
+                for link in links:
+                    tickets = Ticket.query.filter_by(linkid=link.id).all()
+                    if len(tickets) > 0:
+                        for ticket in tickets:
+                            db.session.delete(ticket)
+            if len(links) > 0:
+                for link in links:
+                    db.session.delete(link)        
             if station is not None:
                 db.session.delete(station)
                 db.session.commit()
