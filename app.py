@@ -22,14 +22,18 @@ def home_page():
 def find_links():
     form = SearchForm()
     if request.method == 'POST':
-        display_content = []
-        start_station_id = Station.query.filter_by(name=form.start.data).first().id
-        start_station_end = Station.query.filter_by(name=form.end.data).first().id
-        links = Link.query.filter_by(start=start_station_id, end=start_station_end).all()
-        display_content.append(form.start.data)
-        display_content.append(form.end.data)
-        print(links)
-        return render_template('searched_links.html',links=links, display_content=display_content)
+        stationlinks = []
+        times = []
+        start_station = StationLink.query.filter_by(station_id=Station.query.filter_by(name=form.start.data).first().id).all()
+        end_station = StationLink.query.filter_by(station_id=Station.query.filter_by(name=form.end.data).first().id).all()
+
+        for x in start_station:
+            for y in end_station:
+                if x.link_id == y.link_id and x not in stationlinks and x.time < y.time and x.time >= form.time_first.data:
+                    stationlinks.append([x, x.time, y.time])
+        
+        display_content = [form.start.data, form.end.data]
+        return render_template('searched_links.html', links=stationlinks, display_content=display_content, times=times)
 
 @app.route('/home/searched_links', methods=['POST'])
 def found_links():
@@ -368,7 +372,6 @@ def edit_link(type):
             db.session.commit()
             return redirect("/link")
         elif type == "edit":
-            
             toedit = Link.query.filter_by(id=form.id.data).first()
             sorted_stations = StationLink.query.filter_by(link_id=form.id.data).all()
             sorted_stations.sort(key=lambda x: x.time,reverse=True)
@@ -408,10 +411,8 @@ def edit_link(type):
             id = request.form.get('id')
             link = Link.query.filter_by(id=id).first()
 
-            print(id)
             a_zip = zip(request.form.getlist('station[]'), request.form.getlist('station_time[]'))
             zipped_stations = list(a_zip)
-            print(zipped_stations)
             for pair in zipped_stations:
                 station_id, time = pair
                 station_link = StationLink(time=time)

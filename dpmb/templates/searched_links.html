@@ -17,7 +17,7 @@
                         <div class="card-header">
                             <div class="row justify-content-start">
                                 <div class="col-5">
-                                    {{link.time_first.date()}}
+                                    {{link[0].time.date()}}
                                 </div>
                                 <div class="col-5">
                                     {{display_content[0]}} - {{display_content[1]}}
@@ -35,7 +35,7 @@
                                                     <p class="card-text ml-2">{{display_content[0]}}</p>
                                                 </div>
                                                 <div class="col-7">
-                                                    <p class="card-text">{{link.time_first.strftime("%H:%M")}}</p>
+                                                    <p class="card-text">{{link[1].strftime("%H:%M")}}</p>
                                                 </div>
                                             </div>
                                            
@@ -47,12 +47,17 @@
                                                     <p class="card-text ml-2">{{display_content[1]}}</p>
                                                 </div>
                                                 <div class="col-7">
-                                                    <p class="card-text">{{link.time_last.strftime("%H:%M")}}</p>
+                                                    <p class="card-text">{{link[2].strftime("%H:%M")}}</p>
                                                 </div>
                                             </div>
                                             
                                         </li>
                                     </ul>
+                                </div>
+                            </div>
+                            <div class="row justify-content-end">
+                                <div class="col-12 ">
+                                    <button class="btn btn-success float-right" data-toggle="modal" data-target="#buyTicket{{link[0].link_id}}"><i class="fas fa-shopping-basket"></i></button>
                                 </div>
                             </div>
                         </div>
