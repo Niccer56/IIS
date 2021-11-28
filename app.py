@@ -21,6 +21,7 @@ def home_page():
 @app.route('/home/search', methods=['POST'])
 def find_links():
     form = SearchForm()
+    reg_form = RegisterForm()
     if request.method == 'POST':
         stationlinks = []
         times = []
@@ -33,12 +34,12 @@ def find_links():
                     stationlinks.append([x, x.time, y.time])
         
         display_content = [form.start.data, form.end.data]
-        return render_template('searched_links.html', links=stationlinks, display_content=display_content, times=times)
+        return render_template('searched_links.html', links=stationlinks, display_content=display_content, times=times, form=reg_form)
 
-@app.route('/home/searched_links', methods=['POST'])
-def found_links():
+@app.route('/buy', methods=['POST'])
+def buy_tickets():
 
-    return redirect("/home/searched_links")
+    return redirect('/home')
 
 
 @app.route('/customer', methods=['GET', 'POST'])
@@ -77,7 +78,7 @@ def ticket_page():
     tickets = []
     for ticket in query:
         link = Link.query.filter_by(id=ticket.linkid).first()
-        tickets.append([ticket, User.query.filter_by(id=ticket.customerid).first(), Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first(), link])
+        tickets.append([ticket, ticket.email, Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first(), link])
     return render_template('ticket.html', tickets=tickets, form=form)
 
 @app.route('/vehicle', methods=['GET'])
@@ -315,9 +316,8 @@ def edit_ticket(type):
     if request.method == 'POST':
         if type == "add":
             data = Ticket()
-            user = User.query.filter_by(email=form.email.data).first()
             link = form.link.data.partition(" ")[0]
-            data.customerid = user.id
+            data.email = form.email.data
             data.linkid = link
             data.expiration = form.expiration.data
             db.session.add(data)
@@ -325,9 +325,8 @@ def edit_ticket(type):
             return redirect("/ticket")
         elif type == "edit":
             toedit = Ticket.query.filter_by(id=form.id.data).first()
-            user = User.query.filter_by(email=form.email.data).first()
             link = form.link.data.partition(" ")[0]
-            toedit.customerid = user.id
+            toedit.email = form.email.data
             toedit.linkid = link
             toedit.expiration = form.expiration.data
             db.session.commit()
@@ -374,7 +373,7 @@ def edit_link(type):
         elif type == "edit":
             toedit = Link.query.filter_by(id=form.id.data).first()
             sorted_stations = StationLink.query.filter_by(link_id=form.id.data).all()
-            sorted_stations.sort(key=lambda x: x.time,reverse=True)
+            sorted_stations.sort(key=lambda x: x.time)
             toedit_station1 = sorted_stations[0]
             toedit_station2 = sorted_stations[-1]
             name = form.start.data.partition(" ")[0]
@@ -391,6 +390,10 @@ def edit_link(type):
             toedit.time_first = form.time_first.data
             toedit_station1.time = form.time_first.data
             toedit_station2.time = form.time_last.data
+            station = Station.query.filter_by(name=name).first()
+            toedit_station1.station_id = station.id
+            station = Station.query.filter_by(name=nameend).first()
+            toedit_station2.station_id = station.id
             toedit.time_last =  form.time_last.data
             
             db.session.commit()

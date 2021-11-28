@@ -16,11 +16,14 @@
                     <div class="card bg-light link-box">
                         <div class="card-header">
                             <div class="row justify-content-start">
-                                <div class="col-5">
+                                <div class="col-4">
                                     {{link[0].time.date()}}
                                 </div>
-                                <div class="col-5">
+                                <div class="col-4">
                                     {{display_content[0]}} - {{display_content[1]}}
+                                </div>
+                                <div class="col-4 text-right">
+                                {{link[2].date()}}
                                 </div>
                             </div>
                         </div>
@@ -35,7 +38,7 @@
                                                     <p class="card-text ml-2">{{display_content[0]}}</p>
                                                 </div>
                                                 <div class="col-7">
-                                                    <p class="card-text">{{link[1].strftime("%H:%M")}}</p>
+                                                    <p class="card-text">{{link[1].strftime("%H:%M")}} </p>
                                                 </div>
                                             </div>
                                            
@@ -48,6 +51,8 @@
                                                 </div>
                                                 <div class="col-7">
                                                     <p class="card-text">{{link[2].strftime("%H:%M")}}</p>
+                                                  
+                                                     
                                                 </div>
                                             </div>
                                             
@@ -61,6 +66,35 @@
                                 </div>
                             </div>
                         </div>
+                    </div>
+
+                    <!--REGISTERED USER-->
+                    <div class="modal fade" id="buyTicket{{link[0].link_id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+                    <div class="modal-dialog" role="document">
+                        <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="exampleModalLabel">Add Link</h5>
+                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                            </button>
+                        </div>
+                        <form action="/buy" method="POST" class="form-register">
+                        <div class="modal-body">
+
+                            {{ form.first_name.label() }}
+                            {{ form.first_name(class="form-control", placeholder="First name") }}
+                            {{ form.last_name.label() }}
+                            {{ form.last_name(class="form-control", placeholder="Last name") }}
+                            {{ form.email.label() }}
+                            {{ form.email(class="form-control", placeholder="Email") }}
+                    
+                        </div>
+                        <div class="modal-footer text-left">
+                            {{ form.submit(class="btn btn-primary mt-4") }}
+                        </div>
+                        </form>
+                        </div>
+                    </div>
                     </div>
                 {% endfor %}
                 {% else %}

@@ -64,9 +64,9 @@ class User(db.Model, UserMixin):
 
 class Ticket(db.Model):
     __tablename__ = 'ticket'
-
+    
     id = db.Column(db.Integer, primary_key=True)
-    customerid = db.Column(db.Integer, db.ForeignKey("users.id"), nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False)
     linkid = db.Column(db.Integer, db.ForeignKey("link.id"), nullable=False)
     expiration = db.Column(db.DateTime)
 

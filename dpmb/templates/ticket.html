@@ -25,11 +25,11 @@
         {% set cnt.value = cnt.value + 1 %}
         <tr>
           <td>{{cnt.value}}</td>
-          <td>{{ticket[1].email}}</td>
+          <td>{{ticket[1]}}</td>
           <td>{{ticket[4].id|string +" "+  ticket[2].name +"-" + ticket[3].name}}</td>
           <td>{{ticket[0].expiration}}</td>
           <td>
-            <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editTicket{{ticket[0].id}}" onclick="selected('{{ticket[1].email}}','{{ticket[4].id|string +" "+  ticket[2].name +"-" + ticket[3].name}}')"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editTicket{{ticket[0].id}}" onclick="selected('{{ticket[1]}}','{{ticket[4].id|string +" "+  ticket[2].name +"-" + ticket[3].name}}')"><i class="fas fa-edit"></i></button>
             <button class="btn btn-danger" data-toggle="modal" data-target="#deleteTicket{{ticket[0].id}}"><i class="fas fa-trash"></i></button>
           </td>
             <!--Edit Ticket-->
