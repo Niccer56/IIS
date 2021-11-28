@@ -39,6 +39,8 @@ class LinkForm(FlaskForm):
     end = SelectField(u'End: ', choices=StationLink.getAllStations, validators=[validators.InputRequired()])
     time_first =DateTimeLocalField('First Station Time',format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])
     time_last = DateTimeLocalField('Last Station Time',format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])
+    staff = SelectField(u'Staff: ', choices=User.getAllStaffNames , validators=[validators.InputRequired()])
+    carrierStaff = SelectField(u'Staff: ', choices=Link.getAllOwnersStaff , validators=[validators.InputRequired()])
     submit = SubmitField(label='Confirm', validators=[validators.InputRequired()])
 
 class CurrentStation(FlaskForm):

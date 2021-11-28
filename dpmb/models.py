@@ -1,7 +1,7 @@
 from dpmb import db, bcrypt
 from flask_login import UserMixin
 from flask_authorize import AllowancesMixin
-
+from flask_login import  current_user
 
 UserRole = db.Table(
     'user_role', db.Model.metadata,
@@ -38,6 +38,15 @@ class User(db.Model, UserMixin):
         names = []
         for carrier in carriers:
             names.append(f"{carrier.email}")
+        return names
+
+    
+
+    def getAllStaffNames():
+        staff = User.query.join(User.roles).filter_by(name="staff").all()
+        names = []
+        for staffName in staff:
+            names.append(f"{staffName.email}")
         return names
 
     def getAllCarriersId():
@@ -103,7 +112,20 @@ class Link(db.Model):
     time_first = db.Column(db.DateTime, nullable=False)
     time_last = db.Column(db.DateTime, nullable=False)
     stations = db.relationship("StationLink", back_populates="link", cascade="all, delete-orphan")
+    staff = db.Column(db.Integer, db.ForeignKey("users.id"))
    # vehicle =   db.Column(db.Integer, db.ForeignKey("vehicle.id"))
+    def getAllOwnersStaff():
+        query = Link.query.all()
+        
+        users = []
+        for link in query:
+            names = []
+            staff= current_user.id
+            users=User.query.filter_by(owner=staff).all()
+            for user in users:
+                names.append(f"{user.email}")
+        return names
+
     def getAllLinks():
         query = Link.query.all()
 

@@ -122,19 +122,33 @@ def station_page():
 def link_page():
     query = Link.query.all()
     
-    
-    form = LinkForm()
-    
     names = []
-    for link in query:
-        links = [] 
-        links.append([Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
+    form = LinkForm()
+    if (authorize.has_role("admin")):
         
-        for station in links:
+        for link in query:
+            links = [] 
+            links.append([Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
+        
+            for station in links:
             
-            names.append([station[0].name + " "  + link.time_first.strftime("%m/%d/%Y, %H:%M"),station[1].name + " " + link.time_last.strftime("%m/%d/%Y, %H:%M"),link.id ])   
+                names.append([station[0].name + " "  + link.time_first.strftime("%m/%d/%Y, %H:%M"),station[1].name + " " + link.time_last.strftime("%m/%d/%Y, %H:%M"),link.id ])   
             
-    return render_template('link.html', links=names, form = form)
+        return render_template('link.html', links=names, form = form)
+
+    if (authorize.has_role("carrier")):
+        crrier = []
+        for link in query:
+            staff= User.query.filter_by(id=link.staff).first() 
+            if (staff.owner == current_user.id):
+                links = [] 
+                links.append([Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
+        
+                for station in links:
+            
+                    names.append([station[0].name + " "  + link.time_first.strftime("%m/%d/%Y, %H:%M"),station[1].name + " " + link.time_last.strftime("%m/%d/%Y, %H:%M"),link.id ])   
+            
+        return render_template('link.html', links=names, form = form)      
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
@@ -228,8 +242,8 @@ def approve_station(id):
 
 @app.route('/customer/edit_customer/<string:type>', methods=['POST'])
 def edit_customer(type):
-    if (authorize.has_role("admin")):
-        form = UserForm()
+    
+    form = UserForm()
     if request.method == 'POST':
         if type == "add":
             data = User()
@@ -342,7 +356,10 @@ def edit_link(type):
             data.time_last = form.time_last.data
             stationlink_last.station = station
             stationlink_last.time = form.time_last.data
-
+            if (authorize.has_role("admin")):
+                data.staff = User.query.filter_by(email=form.staff.data).first().id 
+            elif (authorize.has_role("carrier")):
+                data.staff = User.query.filter_by(email=form.carrierStaff.data).first().id     
             data.stations.append(stationlink_first)
             data.stations.append(stationlink_last)
             db.session.add(data)
@@ -362,6 +379,10 @@ def edit_link(type):
             station = Station.query.filter_by(name=nameend).first()
             toedit.end = station.id
             
+            if (authorize.has_role("admin")):
+                toedit.staff = User.query.filter_by(email=form.staff.data).first().id 
+            elif (authorize.has_role("carrier")):
+                toedit.staff = User.query.filter_by(email=form.carrierStaff.data).first().id 
             toedit.time_first = form.time_first.data
             toedit_station1.time = form.time_first.data
             toedit_station2.time = form.time_last.data
@@ -417,5 +438,4 @@ def edit_vehicle(type):
 
 if __name__ == '__main__':
     
-        
     app.run(debug=True)
