@@ -16,6 +16,7 @@
             <th scope="col">Current Station</th>
             <th scope="col">Vehicle Name</th>
             <th scope="col">Owner</th>
+            <th scope="col">Capacity</th>
             <th scope="col">Actions</th>
           </tr>
         </thead>
@@ -28,6 +29,7 @@
             <td>{{vehicle[1]}}</td>
             <td>{{vehicle[0].vehicle_name}}</td>
             <td>{{vehicle[2]}}</td>
+            <td>{{vehicle[0].capacity}}</td>
             <td>
               
               <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editVehicle{{vehicle[0].id}}" onclick="selected('{{vehicle[2]}}','{{vehicle[1]}}')"><i class="fas fa-edit"></i></button>
@@ -51,6 +53,9 @@
                     {{ form.vehicle_name.label() }}
                     {{ form.vehicle_name(class="form-control", placeholder="Vehicle Name", value=vehicle[0].vehicle_name) }}
                     
+                    {{ form.capacity.label() }}
+                    {{ form.capacity(class="form-control", placeholder="Capacity", value=vehicle[0].capacity) }}
+
                     {% if authorize.has_role('admin') %}
                     {{ form.owner.label() }}
                     <div class="js-carrier">
@@ -114,6 +119,9 @@
 
               {{ form.vehicle_name.label() }}
               {{ form.vehicle_name(class="form-control", placeholder="Vehicle Name") }}
+
+              {{ form.capacity.label() }}
+              {{ form.capacity(class="form-control", placeholder="Capacity") }}
 
               {{ form.current_station.label() }} {{ form.current_station(class="form-control") }}
               

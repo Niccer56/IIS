@@ -1,11 +1,11 @@
 from flask_admin.contrib.sqla.view import ModelView
 from flask_wtf import FlaskForm
-from wtforms import StringField, PasswordField, SubmitField, validators, ValidationError, SelectField, DateField, FieldList, FormField
+from wtforms import StringField, PasswordField, SubmitField, validators, ValidationError, SelectField, DateField, FieldList, FormField, IntegerField
 from wtforms import DateTimeLocalField
 from wtforms.fields.simple import HiddenField
 from dpmb.models import User, Vehicle, Station, Link, Role, StationLink
 class RegisterForm(FlaskForm):
-
+    link_id = HiddenField()
     first_name = StringField(label='First name:', validators=[validators.InputRequired()])
     last_name = StringField(label='Last Name:', validators=[validators.InputRequired()])
     email = StringField(label='Email:', validators=[
@@ -47,6 +47,7 @@ class VehicleForm(FlaskForm):
     id = HiddenField()
     vehicle_name = StringField(label='Vehicle Name: ', validators=[validators.InputRequired()])
     current_station = SelectField(u'Current Station: ', choices=Station.getAllStationNames, validators=[validators.InputRequired()])
+    capacity = IntegerField(u'Capacity: ', validators=[validators.InputRequired()])
     owner = SelectField(u'Owner: ', choices=User.getAllCarriersName , validators=[validators.InputRequired()])
     submit = SubmitField(label='Submit', validators=[validators.InputRequired()])
 

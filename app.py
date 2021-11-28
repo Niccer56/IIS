@@ -38,6 +38,16 @@ def find_links():
 
 @app.route('/buy', methods=['POST'])
 def buy_tickets():
+    form = RegisterForm()
+    if request.method == 'POST':
+        data = Ticket()
+        exp_date = Link.query.filter_by(id=form.link_id.data).first().time_last
+        print(exp_date)
+        data.email = form.email.data
+        data.linkid = form.link_id.data
+        data.expiration = exp_date
+        db.session.add(data)
+        db.session.commit()
 
     return redirect('/home')
 
@@ -437,6 +447,7 @@ def edit_vehicle(type):
             elif (authorize.has_role("carrier")):
                 data.owner = current_user.id 
             data.current_station = Station.query.filter_by(name=form.current_station.data).first().id
+            data.capacity = form.capacity.data
             db.session.add(data)
             db.session.commit()
             return redirect("/vehicle")
@@ -447,6 +458,7 @@ def edit_vehicle(type):
             if (authorize.has_role("admin")):
                 toedit.owner = User.query.filter_by(email=form.owner.data).first().id
             toedit.current_station = Station.query.filter_by(name=form.current_station.data).first().id
+            toedit.capacity = form.capacity.data
             db.session.commit()
             return redirect("/vehicle")
         elif type == "delete":

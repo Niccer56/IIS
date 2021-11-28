@@ -80,7 +80,7 @@
                         </div>
                         <form action="/buy" method="POST" class="form-register">
                         <div class="modal-body">
-
+                             <input type="hidden" id="link_id" name="link_id" value={{link[0].link_id}}>
                             {{ form.first_name.label() }}
                             {{ form.first_name(class="form-control", placeholder="First name") }}
                             {{ form.last_name.label() }}

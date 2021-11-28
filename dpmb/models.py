@@ -142,4 +142,5 @@ class Vehicle(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     vehicle_name = db.Column(db.String(256))
     owner = db.Column(db.Integer, db.ForeignKey("users.id"))
+    capacity = db.Column(db.Integer)
     current_station = db.Column(db.Integer, db.ForeignKey("station.id"))
