@@ -27,7 +27,7 @@ def find_links():
         times = []
         start_station = StationLink.query.filter_by(station_id=Station.query.filter_by(name=form.start.data).first().id).all()
         end_station = StationLink.query.filter_by(station_id=Station.query.filter_by(name=form.end.data).first().id).all()
-
+        
         for x in start_station:
             for y in end_station:
                 if x.link_id == y.link_id and x not in stationlinks and x.time < y.time and x.time >= form.time_first.data:
@@ -147,7 +147,12 @@ def link_page():
 
             for station in links:
                 staff = User.query.filter_by(id=link.staff).first() 
-                names.append([station[0].name + " "  + link.time_first.strftime("%m/%d/%Y, %H:%M"),station[1].name + " " + link.time_last.strftime("%m/%d/%Y, %H:%M"),link.id, staff.email ])   
+                tickets = Ticket.query.filter_by(linkid=link.id).all()
+                capacity = Vehicle.query.filter_by(id=link.vehicle).first().capacity
+                if len(tickets)>0:
+                    
+                    capacity = capacity - len(tickets)
+                names.append([station[0].name + " "  + link.time_first.strftime("%m/%d/%Y, %H:%M"),station[1].name + " " + link.time_last.strftime("%m/%d/%Y, %H:%M"),link.id, staff.email,capacity ])   
 
         return render_template('link.html', links=names, form = form)
 
@@ -159,7 +164,12 @@ def link_page():
                 links = [] 
                 links.append([Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
                 for station in links:
-                    names.append([station[0].name + " "  + link.time_first.strftime("%m/%d/%Y, %H:%M"),station[1].name + " " + link.time_last.strftime("%m/%d/%Y, %H:%M"),link.id, staff.email ])
+                    tickets = Ticket.query.filter_by(linkid=link.id).all()
+                    capacity = Vehicle.query.filter_by(id=link.vehicle).first().capacity
+                    if len(tickets)>0:
+                        
+                        capacity = capacity - len(tickets)
+                    names.append([station[0].name + " "  + link.time_first.strftime("%m/%d/%Y, %H:%M"),station[1].name + " " + link.time_last.strftime("%m/%d/%Y, %H:%M"),link.id, staff.email,capacity ])
         return render_template('link.html', links=names, form = form)      
 
 @app.route('/login', methods=['GET', 'POST'])
@@ -476,5 +486,25 @@ def edit_vehicle(type):
 
 
 if __name__ == '__main__':
-         
+    
+    query = Link.query.all()
+
+    
+    
+    names = []
+
+    for link in query:
+        links = [] 
+        links.append([Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
+
+        for station in links:
+            staff = User.query.filter_by(id=link.staff).first() 
+            tickets = Ticket.query.filter_by(linkid=link.id).all()
+
+            capacity = Vehicle.query.filter_by(id=link.vehicle).first().capacity
+            if len(tickets)>0:
+                
+                capacity = capacity - len(tickets)
+            names.append([station[0].name + " "  + link.time_first.strftime("%m/%d/%Y, %H:%M"),station[1].name + " " + link.time_last.strftime("%m/%d/%Y, %H:%M"),link.id, staff.email,capacity ]) 
+    print(names)          
     app.run(debug=True)
