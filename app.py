@@ -64,8 +64,8 @@ def yourTickets_page():
     return render_template('yourTickets.html', tickets=tickets)
 
 @app.route('/customer', methods=['GET', 'POST'])
-#@login_required
-#@authorize.has_role("admin")
+@login_required
+@authorize.has_role("admin", "carrier")
 def customer_page():
     roles = Role.query.all()
     types = []
@@ -84,14 +84,13 @@ def customer_page():
             if (current_user.id == staff.owner):
                 staffList.append(staff)
                 for role in roles:
-
                     types.append(role.name)
 
         return render_template('customer.html', customers=staffList, usertype=types, form=form)
 
 @app.route('/ticket', methods=['GET', 'POST'])
-#@login_required
-#@authorize.has_role("admin", "staff")
+@login_required
+@authorize.has_role("admin", "staff")
 def ticket_page():
     form = TicketForm()
     query = Ticket.query.all()
@@ -105,8 +104,8 @@ def ticket_page():
     return render_template('ticket.html', tickets=tickets, form=form)
 
 @app.route('/vehicle', methods=['GET'])
-#@login_required
-#@authorize.has_role("admin", "carrier")
+@login_required
+@authorize.has_role("admin", "carrier")
 def vehicle_page():
     form = VehicleForm()
     vehicle = Vehicle.query.all()
@@ -128,8 +127,8 @@ def vehicle_page():
         return render_template('vehicle.html', vehicles=vehicles, form=form)
 
 @app.route('/station', methods=['GET', 'POST'])
-#@login_required
-#@authorize.has_role("admin", "carrier")
+@login_required
+@authorize.has_role("admin", "carrier")
 def station_page():
     form = StationForm()
     station = Station.query.all()
@@ -143,8 +142,8 @@ def station_page():
         return render_template('station.html', stations=ownStations, form=form)
 
 @app.route('/link', methods=['GET', 'POST'])
-#@login_required
-#@authorize.has_role("admin", "carrier")
+@login_required
+@authorize.has_role("admin", "carrier")
 def link_page():
     query = Link.query.all()
     form = LinkForm()
@@ -192,6 +191,7 @@ def login_page():
     return render_template('login.html', form=form)
 
 @app.route('/logout', methods=['GET', 'POST'])
+@login_required
 def logout_page():
     logout_user()
     flash('You have been successfuly logged out !')
@@ -222,12 +222,16 @@ def register_page():
     return render_template('register.html', form=form)
 
 @app.route('/station/edit_station/<int:id>', methods=['POST', 'GET'])
+@login_required
+@authorize.has_role("admin", "carrier")
 def stations_form(id):
     link = Link.query.filter_by(id=id).first()
     stations = Station.query.all()
     return render_template('edit_stations.html', stations=stations, link=link)
 
 @app.route('/station/edit_station/<string:type>', methods=['POST'])
+@login_required
+@authorize.has_role("admin", "carrier")
 def edit_station(type):
     form = StationForm()
     if request.method == 'POST':
@@ -282,6 +286,8 @@ def edit_station(type):
                 return redirect("/station")
 
 @app.route('/station/approve/<int:id>', methods=['POST', 'GET'])
+@login_required
+@authorize.has_role("admin")
 def approve_station(id):
     toedit = Station.query.filter_by(id=id).first()
     toedit.verified = True
@@ -289,6 +295,8 @@ def approve_station(id):
     return redirect("/station")
 
 @app.route('/customer/edit_customer/<string:type>', methods=['POST'])
+@login_required
+@authorize.has_role("admin", "carrier")
 def edit_customer(type):
     form = UserForm()
     if request.method == 'POST':
@@ -330,6 +338,8 @@ def edit_customer(type):
                 return redirect("/customer")
 
 @app.route('/ticket/edit_ticket/<string:type>', methods=['POST'])
+@login_required
+@authorize.has_role("admin", "staff")
 def edit_ticket(type):
     form = TicketForm()
     if request.method == 'POST':
@@ -358,6 +368,8 @@ def edit_ticket(type):
                 return redirect("/ticket")
 
 @app.route('/link/edit_link/<string:type>', methods=['POST'])
+@login_required
+@authorize.has_role("admin", "carrier")
 def edit_link(type):
     form = LinkForm()
     if request.method == 'POST':
@@ -446,6 +458,8 @@ def edit_link(type):
             return redirect("/link")
 
 @app.route('/vehicle/edit_vehicle/<string:type>', methods=['POST'])
+@login_required
+@authorize.has_role("admin", "carrier")
 def edit_vehicle(type):
     form = VehicleForm()
     if request.method == 'POST':
