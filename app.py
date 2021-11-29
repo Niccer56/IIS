@@ -106,7 +106,7 @@ def ticket_page():
             tickets.append([ticket, ticket.email, start_station, end_station, link])
         return render_template('ticket.html', tickets=tickets, form=form)
 
-    if (authorize.has_role("staff")):    
+    if (authorize.has_role("staff")):
         for ticket in query:
             link = Link.query.filter_by(id=ticket.linkid).first()
             if (link.staff == current_user.id):
@@ -369,7 +369,7 @@ def edit_ticket(type):
             if (authorize.has_role("admin")):
                 link = form.link.data.partition(" ")[0]
             elif (authorize.has_role("staff")):
-                link = form.staffLink.data.partition(" ")[0]    
+                link = form.staffLink.data.partition(" ")[0]
             data.email = form.email.data
             data.linkid = link
             data.expiration = form.expiration.data.strftime("%Y-%m-%dT%H:%M")
@@ -380,7 +380,7 @@ def edit_ticket(type):
             if (authorize.has_role("admin")):
                 link = form.link.data.partition(" ")[0]
             elif (authorize.has_role("staff")):
-                link = form.staffLink.data.partition(" ")[0]  
+                link = form.staffLink.data.partition(" ")[0]
             toedit.email = form.email.data
             toedit.linkid = link
             toedit.expiration = form.expiration.data.strftime("%Y-%m-%dT%H:%M")
@@ -499,6 +499,7 @@ def edit_link(type):
         elif type == "stations":
             id = request.form.get('id')
             link = Link.query.filter_by(id=id).first()
+            temp = []
             a_zip = zip(request.form.getlist('station[]'), request.form.getlist('station_time[]'))
             zipped_stations = list(a_zip)
             for pair in zipped_stations:
@@ -513,14 +514,19 @@ def edit_link(type):
                 if time < link.time_first or time > link.time_last:
                     flash(f"Selected station time {time} is out of the link's time range.")
                     return redirect(f"/station/edit_station/{id}")
-                if len(StationLink.query.filter_by(link_id=id, station_id=station_id).all()) > 0:
-                    flash("Duplicate station usage.")
-                    return redirect(f"/station/edit_station/{id}")
 
                 station_link = StationLink(time=time)
                 station_link.station = Station.query.filter_by(id=station_id).first()
-                link.stations.append(station_link)
+                temp.append(station_link)
+
+            for slink in link.stations:
+                if slink.station_id != link.start and slink.station_id != link.end:
+                    db.session.delete(slink)
+
+            for slink in temp:
+                link.stations.append(slink)
             db.session.commit()
+
     return redirect("/link")
 
 @app.route('/vehicle/edit_vehicle/<string:type>', methods=['POST'])
