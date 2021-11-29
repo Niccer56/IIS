@@ -1,7 +1,7 @@
 from dpmb import db, bcrypt
 from flask_login import UserMixin
 from flask_authorize import AllowancesMixin
-from flask_login import  current_user
+from flask_login import current_user
 
 UserRole = db.Table(
     'user_role', db.Model.metadata,
@@ -14,12 +14,14 @@ class Role(db.Model, AllowancesMixin):
 
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(255), nullable=False, unique=True)
+
     def getAllRoles():
         query = Role.query.all()
         names = []
         for role in query:
             names.append(role.name)
         return names
+
 class User(db.Model, UserMixin):
     __tablename__ = 'users'
 
@@ -30,6 +32,7 @@ class User(db.Model, UserMixin):
     password = db.Column(db.String(80), nullable=False)
     roles = db.relationship('Role', secondary=UserRole)
     owner = db.Column(db.Integer, nullable=False)
+
     def password_check(self, unhashed_pwd):
         return bcrypt.check_password_hash(self.password, unhashed_pwd)
 
@@ -39,8 +42,6 @@ class User(db.Model, UserMixin):
         for carrier in carriers:
             names.append(f"{carrier.email}")
         return names
-
-    
 
     def getAllStaffNames():
         staff = User.query.join(User.roles).filter_by(name="staff").all()
@@ -55,6 +56,7 @@ class User(db.Model, UserMixin):
         for carrier in carriers:
             names.append(f"{carrier.id}")
         return names
+
     def getAllEmails():
         query = User.query.all()
         names = []
@@ -64,7 +66,7 @@ class User(db.Model, UserMixin):
 
 class Ticket(db.Model):
     __tablename__ = 'ticket'
-    
+
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), nullable=False)
     linkid = db.Column(db.Integer, db.ForeignKey("link.id"), nullable=False)
@@ -79,13 +81,15 @@ class StationLink(db.Model):
 
     station = db.relationship("Station", back_populates="links")
     link = db.relationship("Link", back_populates="stations")
+
     def getAllStations():
         query = Station.query.all()
         names = []
         for station in query:
-            if(station.verified==1):
+            if(station.verified == 1):
                 names.append(station.name)
         return names
+
 class Station(db.Model):
     __tablename__ = 'station'
 
@@ -93,13 +97,13 @@ class Station(db.Model):
     name = db.Column(db.String(80), nullable=False)
     links = db.relationship("StationLink", back_populates="station")
     owner = db.Column(db.Integer, db.ForeignKey("users.id"))
-    verified = db.Column(db.Boolean,nullable=False)
+    verified = db.Column(db.Boolean, nullable=False)
 
     def getAllStationNames():
         query = Station.query.all()
         names = []
         for station in query:
-            if(station.verified==1):
+            if(station.verified == 1):
                 names.append(station.name)
         return names
 
@@ -114,41 +118,32 @@ class Link(db.Model):
     time_last = db.Column(db.DateTime, nullable=False)
     stations = db.relationship("StationLink", back_populates="link", cascade="all, delete-orphan")
     staff = db.Column(db.Integer, db.ForeignKey("users.id"))
+    vehicle = db.Column(db.Integer, db.ForeignKey("vehicle.id"))
 
-    vehicle =   db.Column(db.Integer, db.ForeignKey("vehicle.id"))
     def getAllOwnersStaff():
-       
-        names = []  
-        
-
-        staff= current_user.id
-        users=User.query.filter_by(owner=staff).all()
+        names = []
+        staff = current_user.id
+        users = User.query.filter_by(owner=staff).all()
         for user in users:
-                
             names.append(f"{user.email}")
         return names
 
     def getAllOwnersVehicles():
-           
-        names = []  
-        
-
-        
-        vehicles=Vehicle.query.filter_by(owner=current_user.id).all()
+        names = []
+        vehicles = Vehicle.query.filter_by(owner=current_user.id).all()
         for vehicle in vehicles:
-                
             names.append(f"{vehicle.vehicle_name}")
-        return names    
+        return names
 
     def getAllLinks():
         query = Link.query.all()
-
         links = []
         for link in query:
             names = []
             names.append([Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first()])
-            links.append (f"{link.id} {names[0][0].name}-{names[0][1].name}")
+            links.append(f"{link.id} {names[0][0].name}-{names[0][1].name}")
         return links
+
 class Vehicle(db.Model):
     __tablename__ = 'vehicle'
 
@@ -159,8 +154,8 @@ class Vehicle(db.Model):
     current_station = db.Column(db.Integer, db.ForeignKey("station.id"))
 
     def getAllVehicles():
-        names = []  
-        vehicles=Vehicle.query.all()
+        names = []
+        vehicles = Vehicle.query.all()
         for vehicle in vehicles:
             names.append(f"{vehicle.vehicle_name}")
-        return names     
+        return names
