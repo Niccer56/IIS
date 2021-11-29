@@ -305,7 +305,7 @@ def edit_customer(type):
     if request.method == 'POST':
         if type == "add":
             if len(User.query.filter_by(email=form.email.data.strip()).all()) > 0:
-                flash("User with email {form.email.data.strip()} already exists.")
+                flash(f"User with email {form.email.data.strip()} already exists.")
                 return redirect("/customer")
             data = User()
             data.first_name = form.first_name.data.strip()
@@ -325,7 +325,7 @@ def edit_customer(type):
             toedit = User.query.filter_by(id=form.id.data).first()
             if form.email.data.strip() != toedit.email:
                 if len(User.query.filter_by(email=form.email.data.strip()).all()) > 0:
-                    flash("User with email {form.email.data.strip()} already exists.")
+                    flash(f"User with email {form.email.data.strip()} already exists.")
                     return redirect("/customer")
             if (authorize.has_role("carrier")):
                 role = Role.query.filter_by(name="staff").first()

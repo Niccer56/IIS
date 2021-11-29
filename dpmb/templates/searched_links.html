@@ -5,6 +5,18 @@
 {% endblock title %}
 
 {% block mainContent %}
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <h3 class="text-left">Errors:</h3>
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
     <div class="row justify-content-center mt-4">
 
         <div class="jumbotron jumbotron-fluid w-50">
@@ -113,16 +125,6 @@
         </div>
 
     </div>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <br>
-        <ul class=flashes>
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
 
     <style>
 

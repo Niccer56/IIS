@@ -5,6 +5,18 @@
 {% endblock title %}
 
 {% block mainContent %}
+
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <h3 class="text-left">Errors:</h3>
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
     <h1 class="text-center mt-4 mb-4">List of DPMB stations</h1>
     <div class="row justify-content-end">
       <button class="btn btn-success mb-2" style="border-radius: 10px;" data-toggle="modal" data-target="#addStation"><i class="fas fa-plus-circle"></i> Add Station</button>
@@ -140,16 +152,7 @@
     </div>
 
   </div>
-  {% with messages = get_flashed_messages() %}
-    {% if messages %}
-      <br>
-      <ul class=flashes>
-      {% for message in messages %}
-        <li>{{ message }}</li>
-      {% endfor %}
-      </ul>
-    {% endif %}
-  {% endwith %}
+
     <script>
       function myFunction(id) {
         document.getElementById(id).submit();

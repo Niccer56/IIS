@@ -6,6 +6,17 @@
 
 {% block mainContent %}
 
+{% with messages = get_flashed_messages() %}
+  {% if messages %}
+    <h3 class="text-left">Errors:</h3>
+    <ul class=flashes>
+    {% for message in messages %}
+      <li>{{ message }}</li>
+    {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
 <form action="/link/edit_link/stations" method="POST" class="form-register">
     <div class="modal-body">
 
@@ -58,16 +69,6 @@
         </div>
         </div>
     </div>
-    {% with messages = get_flashed_messages() %}
-      {% if messages %}
-        <br>
-        <ul class=flashes>
-        {% for message in messages %}
-          <li>{{ message }}</li>
-        {% endfor %}
-        </ul>
-      {% endif %}
-    {% endwith %}
 <script>
 
       //Clone the hidden element and shows it
