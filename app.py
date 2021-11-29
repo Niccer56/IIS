@@ -52,6 +52,22 @@ def buy_tickets():
     return redirect('/home')
 
 
+@app.route('/yourTickets', methods=['GET', 'POST'])
+#@login_required
+#@authorize.has_role("admin")
+def yourTickets_page():
+    query = Ticket.query.all()
+    tickets = []
+    for ticket in query:
+        if (ticket.email==current_user.email):
+            link = Link.query.filter_by(id=ticket.linkid).first()
+            start_station = Station.query.filter_by(id=link.start).first()
+            end_station = Station.query.filter_by(id=link.end).first()
+        
+            tickets.append([ticket, ticket.email, start_station, end_station, link])
+
+    return render_template('yourTickets.html', tickets=tickets) 
+
 @app.route('/customer', methods=['GET', 'POST'])
 #@login_required
 #@authorize.has_role("admin")
@@ -303,7 +319,7 @@ def edit_customer(type):
             data.password = bcrypt.generate_password_hash(form.password.data)
             if (authorize.has_role("admin")):
                 role = Role.query.filter_by(name=form.role.data).first()
-                data.owner = form.owner.data
+                data.owner = User.query.filter_by(email=form.owner.data).first().id
             elif (authorize.has_role("carrier")):
                 role = Role.query.filter_by(name="staff").first()  
                 data.owner = current_user.id 
