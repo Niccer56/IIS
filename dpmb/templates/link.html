@@ -20,10 +20,10 @@
         </tr>
       </thead>
       <tbody>
-        {% set cnt = namespace(value=0) %} 
-       
+        {% set cnt = namespace(value=0) %}
+
         {% for link in links %}
-        
+
         {% set cnt.value = cnt.value + 1 %}
         <tr>
           <td>{{cnt.value}}</td>
@@ -76,11 +76,12 @@
                     <div class="js-carrier">
                       {{ form.carrierStaff(class="form-control ", placeholder="Staff's Name") }}
                     </div>
-                    
+
                     {{ form.carrierVehicle.label() }} {{ form.carrierVehicle(class="form-control") }}
                     {% endif %}
                   </div>
                   <div class="modal-footer text-left">
+                    {{ form.csrf_token }}
                     {{ form.submit(class="btn btn-primary mt-4") }}
                   </div>
                 </form>
@@ -102,23 +103,24 @@
                     <input type="hidden" name="id" value={{ link[2] }}>
                     <div class="text-left">
                       <h5>Are you sure to delete link {{link[2]}}</h5>
+                      {{ form.csrf_token }}
                       {{ form.submit(class="btn btn-primary mt-4") }}
                     </div>
                   </div>
-                
+
                 </form>
                 </div>
               </div>
             </div>
           </tr>
           {% endfor %}
-          
+
         </tbody>
-      </table>  
+      </table>
       <div class="form-group dynamic-element" style="display:none">
         <div class="row justify-content-center">
-          
-            
+
+
           <!-- Replace these fields -->
             <div class="col-md-6">
               <select id="station" name="station[]" class="form-control">
@@ -138,7 +140,7 @@
             </div>
           </div>
       </div>
-                
+
     <!--ADD LINK-->
     <div class="modal fade" id="addLink" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
@@ -171,10 +173,11 @@
                       {{ form.carrierVehicle.label() }} {{ form.carrierVehicle(class="form-control") }}
                     </div>
                     {% endif %}
-      
+
 
           </div>
           <div class="modal-footer text-left">
+            {{ form.csrf_token }}
             {{ form.submit(class="btn btn-primary mt-4") }}
           </div>
         </form>

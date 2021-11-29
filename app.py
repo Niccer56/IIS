@@ -47,7 +47,6 @@ def buy_tickets():
         if form.validate_on_submit():
             data = Ticket()
             exp_date = Link.query.filter_by(id=form.link_id.data).first().time_last
-            print(exp_date)
             data.email = form.email.data
             data.linkid = form.link_id.data
             data.expiration = exp_date
@@ -204,7 +203,7 @@ def login_page():
 @login_required
 def logout_page():
     logout_user()
-    flash('You have been successfuly logged out !')
+    flash('You have been successfuly logged out!')
     return redirect('/login')
 
 @app.route('/register', methods=['GET', 'POST'])

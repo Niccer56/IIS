@@ -12,7 +12,7 @@
                 <h1 class="display-5 text-center mb-4">Found links</h1>
                 {% if links %}
                     {% for link in links %}
-                
+
                     <div class="card bg-light link-box">
                         <div class="card-header">
                             <div class="row justify-content-start">
@@ -32,7 +32,7 @@
                                 <div class="col-12">
                                     <i class="fas fa-bus-alt"></i>
                                     <ul class="text-left">
-                                        <li> 
+                                        <li>
                                             <div class="row justify-content-start">
                                                 <div class="col-3">
                                                     <p class="card-text ml-2">{{display_content[0]}}</p>
@@ -41,9 +41,9 @@
                                                     <p class="card-text">{{link[1].strftime("%H:%M")}} </p>
                                                 </div>
                                             </div>
-                                           
-                                        </li> 
-                                        <li> 
+
+                                        </li>
+                                        <li>
 
                                             <div class="row justify-content-start">
                                                 <div class="col-3">
@@ -51,11 +51,11 @@
                                                 </div>
                                                 <div class="col-7">
                                                     <p class="card-text">{{link[2].strftime("%H:%M")}}</p>
-                                                  
-                                                     
+
+
                                                 </div>
                                             </div>
-                                            
+
                                         </li>
                                     </ul>
                                 </div>
@@ -87,7 +87,9 @@
                             {{ form.last_name(class="form-control", placeholder="Last name") }}
                             {{ form.email.label() }}
                             {{ form.email(class="form-control", placeholder="Email") }}
-                    
+                            {{ form.csrf_token }}
+
+
                         </div>
                         <div class="modal-footer text-left">
                             <input class="btn btn-primary mt-4" id="submit" name="submit" required="" type="submit" value="Buy Ticket">
@@ -104,9 +106,9 @@
                         </div>
                     </div>
                 {% endif %}
-                
-                
-                
+
+
+
             </div>
         </div>
 
@@ -124,5 +126,5 @@
         }
 
     </style>
-    
+
 {% endblock mainContent %}

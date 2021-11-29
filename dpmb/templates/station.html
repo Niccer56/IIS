@@ -8,7 +8,7 @@
     <h1 class="text-center mt-4 mb-4">List of DPMB stations</h1>
     <div class="row justify-content-end">
       <button class="btn btn-success mb-2" style="border-radius: 10px;" data-toggle="modal" data-target="#addStation"><i class="fas fa-plus-circle"></i> Add Station</button>
-      
+
       <table class="table table-striped table-dark">
         <thead>
           <tr>
@@ -27,10 +27,10 @@
             <td>{{station.name}}</td>
             {% if station.verified==1 %}
             <td>{{"yes"}}</td>
-            {% endif %} 
+            {% endif %}
             {% if station.verified==0 %}
             <td>{{"no"}}</td>
-            {% endif %} 
+            {% endif %}
             <td>
               <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editStation{{station.id}}"><i class="fas fa-edit"></i></button>
               {% if authorize.has_role('admin') %}
@@ -38,8 +38,8 @@
               {% if station.verified == False %}
               <form style="position:relative;" action="{{ url_for('approve_station',id = station.id) }}"></a><button class="btn btn-success"  ><i  class="fas fa-check"></i></button></form>
 
-              {% endif %} 
-              {% endif %} 
+              {% endif %}
+              {% endif %}
             </td>
             <!--Edit STATION-->
             <div class="modal fade" id="editStation{{station.id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -67,6 +67,7 @@
                     {% endif %}
                   </div>
                   <div class="modal-footer text-left">
+                    {{ form.csrf_token }}
                     {{ form.submit(class="btn btn-primary mt-4") }}
                   </div>
                 </form>
@@ -89,10 +90,11 @@
                     <input type="hidden" name="id" value={{ station.id }}>
                     <div class="text-left">
                       <h5>Are you sure to delete station {{station.name}}</h5>
+                      {{ form.csrf_token }}
                       {{ form.submit(class="btn btn-primary mt-4") }}
                     </div>
                   </div>
-                
+
                 </form>
                 </div>
               </div>
@@ -100,10 +102,10 @@
 
 
           </tr>
-          {% endif %} 
+          {% endif %}
           {% endfor %}
         </tbody>
-      </table>            
+      </table>
     <!--ADD STATION-->
     <div class="modal fade" id="addStation" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
       <div class="modal-dialog" role="document">
@@ -125,10 +127,11 @@
                       {{ form.owner(class="form-control ", placeholder="Owner's Name") }}
                     </div>
                     {% endif %}
-      
+
 
           </div>
           <div class="modal-footer text-left">
+            {{ form.csrf_token }}
             {{ form.submit(class="btn btn-primary mt-4") }}
           </div>
         </form>
