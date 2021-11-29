@@ -62,11 +62,19 @@
                     <div class="js-user">
                       {{ form.email.label() }} {{ form.email(class="form-control") }}
                     </div>
+                    {% if authorize.has_role('admin') %}
                     <div class="js-link">
                       {{ form.link.label() }} {{ form.link(class="form-control") }}
                     </div>
+                    {% endif %}
 
-                    {{ form.expiration.label() }} {{ form.expiration(class="form-control", value=ticket[0].expiration, type="datetime" )}}
+                    {% if authorize.has_role('staff') %}
+                    <div class="js-link">
+                      {{ form.staffLink.label() }} {{ form.staffLink(class="form-control") }}
+                    </div>
+                    {% endif %}
+
+                    {{ form.expiration.label() }} {{ form.expiration(class="form-control")}}
 
                   </div>
                   <div class="modal-footer text-left">
@@ -121,7 +129,13 @@
           <div class="modal-body">
 
             {{ form.email.label() }} {{ form.email(class="form-control") }}
-            {{ form.link.label() }} {{ form.link(class="form-control") }}
+            {% if authorize.has_role('admin') %}
+              {{ form.link.label() }} {{ form.link(class="form-control") }}
+            {% endif %}
+
+            {% if authorize.has_role('staff') %}
+              {{ form.staffLink.label() }} {{ form.staffLink(class="form-control") }}
+            {% endif %}
             {{ form.expiration.label() }} {{ form.expiration(class="form-control") }}
 
 

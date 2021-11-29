@@ -97,13 +97,24 @@ def ticket_page():
     form = TicketForm()
     query = Ticket.query.all()
     tickets = []
-    for ticket in query:
-        link = Link.query.filter_by(id=ticket.linkid).first()
-        start_station = Station.query.filter_by(id=link.start).first()
-        end_station = Station.query.filter_by(id=link.end).first()
+    if (authorize.has_role("admin")):
+        for ticket in query:
+            link = Link.query.filter_by(id=ticket.linkid).first()
+            start_station = Station.query.filter_by(id=link.start).first()
+            end_station = Station.query.filter_by(id=link.end).first()
 
-        tickets.append([ticket, ticket.email, start_station, end_station, link])
-    return render_template('ticket.html', tickets=tickets, form=form)
+            tickets.append([ticket, ticket.email, start_station, end_station, link])
+        return render_template('ticket.html', tickets=tickets, form=form)
+
+    if (authorize.has_role("staff")):    
+        for ticket in query:
+            link = Link.query.filter_by(id=ticket.linkid).first()
+            if (link.staff == current_user.id):
+                start_station = Station.query.filter_by(id=link.start).first()
+                end_station = Station.query.filter_by(id=link.end).first()
+
+                tickets.append([ticket, ticket.email, start_station, end_station, link])
+        return render_template('ticket.html', tickets=tickets, form=form)
 
 @app.route('/vehicle', methods=['GET'])
 @login_required
@@ -355,7 +366,10 @@ def edit_ticket(type):
     if request.method == 'POST':
         if type == "add":
             data = Ticket()
-            link = form.link.data.partition(" ")[0]
+            if (authorize.has_role("admin")):
+                link = form.link.data.partition(" ")[0]
+            elif (authorize.has_role("staff")):
+                link = form.staffLink.data.partition(" ")[0]    
             data.email = form.email.data
             data.linkid = link
             data.expiration = form.expiration.data.strftime("%Y-%m-%dT%H:%M")
@@ -363,7 +377,10 @@ def edit_ticket(type):
             db.session.commit()
         elif type == "edit":
             toedit = Ticket.query.filter_by(id=form.id.data).first()
-            link = form.link.data.partition(" ")[0]
+            if (authorize.has_role("admin")):
+                link = form.link.data.partition(" ")[0]
+            elif (authorize.has_role("staff")):
+                link = form.staffLink.data.partition(" ")[0]  
             toedit.email = form.email.data
             toedit.linkid = link
             toedit.expiration = form.expiration.data.strftime("%Y-%m-%dT%H:%M")
