@@ -88,7 +88,10 @@ def ticket_page():
     tickets = []
     for ticket in query:
         link = Link.query.filter_by(id=ticket.linkid).first()
-        tickets.append([ticket, ticket.email, Station.query.filter_by(id=link.start).first(), Station.query.filter_by(id=link.end).first(), link])
+        start_station = Station.query.filter_by(id=link.start).first()
+        end_station = Station.query.filter_by(id=link.end).first()
+        
+        tickets.append([ticket, ticket.email, start_station, end_station, link])
     return render_template('ticket.html', tickets=tickets, form=form)
 
 @app.route('/vehicle', methods=['GET'])
@@ -339,7 +342,7 @@ def edit_ticket(type):
             link = form.link.data.partition(" ")[0]
             data.email = form.email.data
             data.linkid = link
-            data.expiration = form.expiration.data
+            data.expiration = form.expiration.data.strftime("%Y-%m-%dT%H:%M")
             db.session.add(data)
             db.session.commit()
             return redirect("/ticket")
@@ -348,7 +351,7 @@ def edit_ticket(type):
             link = form.link.data.partition(" ")[0]
             toedit.email = form.email.data
             toedit.linkid = link
-            toedit.expiration = form.expiration.data
+            toedit.expiration = form.expiration.data.strftime("%Y-%m-%dT%H:%M")
             db.session.commit()
             return redirect("/ticket")
         elif type == "delete":

@@ -54,7 +54,7 @@
                       {{ form.link.label() }} {{ form.link(class="form-control") }}
                     </div>
                     
-                    {{ form.expiration.label() }} {{ form.expiration(class="form-control") }}
+                    {{ form.expiration.label() }} {{ form.expiration(class="form-control", value=ticket[0].expiration, type="datetime" )}}
 
                   </div>
                   <div class="modal-footer text-left">
