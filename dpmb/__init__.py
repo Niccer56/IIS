@@ -7,6 +7,7 @@ import os
 
 app = Flask(__name__, instance_relative_config=True)
 
+#https://docs.sqlalchemy.org/en/14/core/engines.html#database-urls - for setup of own db
 app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://michal:whiskeyindianovember@winess.irineva.nyara.network:3360/IIS'
 app.config['SECRET_KEY'] = os.urandom(32) #enable to work with forms
 
