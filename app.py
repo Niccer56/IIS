@@ -21,22 +21,18 @@ def find_links():
     form = SearchForm()
     reg_form = RegisterForm()
     if request.method == 'POST':
-        if form.validate_on_submit():
-            stationlinks = []
-            times = []
-            start_station = StationLink.query.filter_by(station_id=Station.query.filter_by(name=form.start.data).first().id).all()
-            end_station = StationLink.query.filter_by(station_id=Station.query.filter_by(name=form.end.data).first().id).all()
+        stationlinks = []
+        times = []
+        start_station = StationLink.query.filter_by(station_id=Station.query.filter_by(name=form.start.data).first().id).all()
+        end_station = StationLink.query.filter_by(station_id=Station.query.filter_by(name=form.end.data).first().id).all()
 
-            for x in start_station:
-                for y in end_station:
-                    if x.link_id == y.link_id and x not in stationlinks and x.time < y.time and x.time >= form.time_first.data:
-                        stationlinks.append([x, x.time, y.time])
+        for x in start_station:
+            for y in end_station:
+                if x.link_id == y.link_id and x not in stationlinks and x.time < y.time and x.time >= form.time_first.data:
+                    stationlinks.append([x, x.time, y.time])
 
-            display_content = [form.start.data, form.end.data]
-            return render_template('searched_links.html', links=stationlinks, display_content=display_content, times=times, form=reg_form)
-        else:
-            for err in form.errors:
-                flash(form.errors[err][0])
+        display_content = [form.start.data, form.end.data]
+        return render_template('searched_links.html', links=stationlinks, display_content=display_content, times=times, form=reg_form)
 
     return redirect("/home")
 
@@ -44,17 +40,13 @@ def find_links():
 def buy_tickets():
     form = RegisterForm()
     if request.method == 'POST':
-        if form.validate_on_submit():
-            data = Ticket()
-            exp_date = Link.query.filter_by(id=form.link_id.data).first().time_last
-            data.email = form.email.data
-            data.linkid = form.link_id.data
-            data.expiration = exp_date
-            db.session.add(data)
-            db.session.commit()
-        else:
-            for err in form.errors:
-                flash(form.errors[err][0])
+        data = Ticket()
+        exp_date = Link.query.filter_by(id=form.link_id.data).first().time_last
+        data.email = form.email.data
+        data.linkid = form.link_id.data
+        data.expiration = exp_date
+        db.session.add(data)
+        db.session.commit()
 
     return redirect('/home')
 
@@ -244,56 +236,53 @@ def stations_form(id):
 def edit_station(type):
     form = StationForm()
     if request.method == 'POST':
-        if form.validate_on_submit():
-            if type == "add":
-                data = Station()
-                if (authorize.has_role("admin")):
-                    data.owner = User.query.filter_by(email=form.owner.data).first().id
-                    data.verified = True
-                elif (authorize.has_role("carrier")):
-                    data.owner = current_user.id
-                    data.verified = False
-                data.name = form.name.data.strip()
-                db.session.add(data)
-                db.session.commit()
-            elif type == "edit":
+        if type == "add":
+            data = Station()
+            if (authorize.has_role("admin")):
+                data.owner = User.query.filter_by(email=form.owner.data).first().id
+                data.verified = True
+            elif (authorize.has_role("carrier")):
+                data.owner = current_user.id
+                data.verified = False
+            data.name = form.name.data.strip()
+            db.session.add(data)
+            db.session.commit()
+        elif type == "edit":
 
-                toedit = Station.query.filter_by(id=form.id.data).first()
-                if (authorize.has_role("admin")):
-                    toedit.owner = User.query.filter_by(email=form.owner.data).first().id
-                elif (authorize.has_role("carrier")):
-                    toedit.owner = current_user.id
-                    toedit.verified = False
-                toedit.name = form.name.data.strip()
+            toedit = Station.query.filter_by(id=form.id.data).first()
+            if (authorize.has_role("admin")):
+                toedit.owner = User.query.filter_by(email=form.owner.data).first().id
+            elif (authorize.has_role("carrier")):
+                toedit.owner = current_user.id
+                toedit.verified = False
+            toedit.name = form.name.data.strip()
+            db.session.commit()
+        elif type == "delete":
+            station = Station.query.filter_by(id=form.id.data).first()
+            links = Link.query.filter_by(start=station.id).all()
+            if len(links) > 0:
+                for link in links:
+                    tickets = Ticket.query.filter_by(linkid=link.id).all()
+                    if len(tickets) > 0:
+                        for ticket in tickets:
+                            db.session.delete(ticket)
+            if len(links) > 0:
+                for link in links:
+                    db.session.delete(link)
+            links = Link.query.filter_by(end=station.id).all()
+            if len(links) > 0:
+                for link in links:
+                    tickets = Ticket.query.filter_by(linkid=link.id).all()
+                    if len(tickets) > 0:
+                        for ticket in tickets:
+                            db.session.delete(ticket)
+            if len(links) > 0:
+                for link in links:
+                    db.session.delete(link)
+            if station is not None:
+                db.session.delete(station)
                 db.session.commit()
-            elif type == "delete":
-                station = Station.query.filter_by(id=form.id.data).first()
-                links = Link.query.filter_by(start=station.id).all()
-                if len(links) > 0:
-                    for link in links:
-                        tickets = Ticket.query.filter_by(linkid=link.id).all()
-                        if len(tickets) > 0:
-                            for ticket in tickets:
-                                db.session.delete(ticket)
-                if len(links) > 0:
-                    for link in links:
-                        db.session.delete(link)
-                links = Link.query.filter_by(end=station.id).all()
-                if len(links) > 0:
-                    for link in links:
-                        tickets = Ticket.query.filter_by(linkid=link.id).all()
-                        if len(tickets) > 0:
-                            for ticket in tickets:
-                                db.session.delete(ticket)
-                if len(links) > 0:
-                    for link in links:
-                        db.session.delete(link)
-                if station is not None:
-                    db.session.delete(station)
-                    db.session.commit()
-        else:
-            for err in form.errors:
-                flash(form.errors[err][0])
+
     return redirect("/station")
 
 @app.route('/station/approve/<int:id>', methods=['POST', 'GET'])
@@ -311,43 +300,39 @@ def approve_station(id):
 def edit_customer(type):
     form = UserForm()
     if request.method == 'POST':
-        if form.validate_on_submit():
-            if type == "add":
-                data = User()
-                data.first_name = form.first_name.data.strip()
-                data.last_name = form.last_name.data.strip()
-                data.email = form.email.data.strip()
-                data.password = bcrypt.generate_password_hash(form.password.data)
-                if (authorize.has_role("admin")):
-                    role = Role.query.filter_by(name=form.role.data).first()
-                    data.owner = User.query.filter_by(email=form.owner.data).first().id
-                elif (authorize.has_role("carrier")):
-                    role = Role.query.filter_by(name="staff").first()
-                    data.owner = current_user.id
-                data.roles = [role]
-                db.session.add(data)
+        if type == "add":
+            data = User()
+            data.first_name = form.first_name.data.strip()
+            data.last_name = form.last_name.data.strip()
+            data.email = form.email.data.strip()
+            data.password = bcrypt.generate_password_hash(form.password.data)
+            if (authorize.has_role("admin")):
+                role = Role.query.filter_by(name=form.role.data).first()
+                data.owner = User.query.filter_by(email=form.owner.data).first().id
+            elif (authorize.has_role("carrier")):
+                role = Role.query.filter_by(name="staff").first()
+                data.owner = current_user.id
+            data.roles = [role]
+            db.session.add(data)
+            db.session.commit()
+        elif type == "edit":
+            toedit = User.query.filter_by(id=form.id.data).first()
+            if (authorize.has_role("carrier")):
+                role = Role.query.filter_by(name="staff").first()
+            elif (authorize.has_role("admin")):
+                role = Role.query.filter_by(name=form.role.data).first()
+                toedit.owner = User.query.filter_by(email=form.owner.data).first().id
+            toedit.first_name = form.first_name.data
+            toedit.last_name = form.last_name.data
+            toedit.email = form.email.data
+            toedit.password = bcrypt.generate_password_hash(form.password.data)
+            toedit.roles = [role]
+            db.session.commit()
+        elif type == "delete":
+            user = User.query.filter_by(id=form.id.data).first()
+            if user is not None:
+                db.session.delete(user)
                 db.session.commit()
-            elif type == "edit":
-                toedit = User.query.filter_by(id=form.id.data).first()
-                if (authorize.has_role("carrier")):
-                    role = Role.query.filter_by(name="staff").first()
-                elif (authorize.has_role("admin")):
-                    role = Role.query.filter_by(name=form.role.data).first()
-                    toedit.owner = User.query.filter_by(email=form.owner.data).first().id
-                toedit.first_name = form.first_name.data
-                toedit.last_name = form.last_name.data
-                toedit.email = form.email.data
-                toedit.password = bcrypt.generate_password_hash(form.password.data)
-                toedit.roles = [role]
-                db.session.commit()
-            elif type == "delete":
-                user = User.query.filter_by(id=form.id.data).first()
-                if user is not None:
-                    db.session.delete(user)
-                    db.session.commit()
-        else:
-            for err in form.errors:
-                flash(form.errors[err][0])
 
     return redirect("/customer")
 
@@ -357,30 +342,27 @@ def edit_customer(type):
 def edit_ticket(type):
     form = TicketForm()
     if request.method == 'POST':
-        if form.validate_on_submit():
-            if type == "add":
-                data = Ticket()
-                link = form.link.data.partition(" ")[0]
-                data.email = form.email.data
-                data.linkid = link
-                data.expiration = form.expiration.data.strftime("%Y-%m-%dT%H:%M")
-                db.session.add(data)
+        if type == "add":
+            data = Ticket()
+            link = form.link.data.partition(" ")[0]
+            data.email = form.email.data
+            data.linkid = link
+            data.expiration = form.expiration.data.strftime("%Y-%m-%dT%H:%M")
+            db.session.add(data)
+            db.session.commit()
+        elif type == "edit":
+            toedit = Ticket.query.filter_by(id=form.id.data).first()
+            link = form.link.data.partition(" ")[0]
+            toedit.email = form.email.data
+            toedit.linkid = link
+            toedit.expiration = form.expiration.data.strftime("%Y-%m-%dT%H:%M")
+            db.session.commit()
+        elif type == "delete":
+            ticket = Ticket.query.filter_by(id=form.id.data).first()
+            if ticket is not None:
+                db.session.delete(ticket)
                 db.session.commit()
-            elif type == "edit":
-                toedit = Ticket.query.filter_by(id=form.id.data).first()
-                link = form.link.data.partition(" ")[0]
-                toedit.email = form.email.data
-                toedit.linkid = link
-                toedit.expiration = form.expiration.data.strftime("%Y-%m-%dT%H:%M")
-                db.session.commit()
-            elif type == "delete":
-                ticket = Ticket.query.filter_by(id=form.id.data).first()
-                if ticket is not None:
-                    db.session.delete(ticket)
-                    db.session.commit()
-        else:
-            for err in form.errors:
-                flash(form.errors[err][0])
+
     return redirect("/ticket")
 
 @app.route('/link/edit_link/<string:type>', methods=['POST'])
@@ -389,89 +371,86 @@ def edit_ticket(type):
 def edit_link(type):
     form = LinkForm()
     if request.method == 'POST':
-        if form.validate_on_submit():
-            if type == "add":
-                data = Link()
-                stationlink_first = StationLink()
-                stationlink_last = StationLink()
+        if type == "add":
+            data = Link()
+            stationlink_first = StationLink()
+            stationlink_last = StationLink()
 
-                name = form.start.data.partition(" ")[0]
-                station = Station.query.filter_by(name=name).first()
-                data.start = station.id
-                stationlink_first.station = station
-                stationlink_first.time = form.time_first.data
+            name = form.start.data.partition(" ")[0]
+            station = Station.query.filter_by(name=name).first()
+            data.start = station.id
+            stationlink_first.station = station
+            stationlink_first.time = form.time_first.data
 
-                nameend = form.end.data.partition(" ")[0]
-                station = Station.query.filter_by(name=nameend).first()
-                data.end = station.id
-                data.time_first = form.time_first.data
-                data.time_last = form.time_last.data
-                stationlink_last.station = station
-                stationlink_last.time = form.time_last.data
+            nameend = form.end.data.partition(" ")[0]
+            station = Station.query.filter_by(name=nameend).first()
+            data.end = station.id
+            data.time_first = form.time_first.data
+            data.time_last = form.time_last.data
+            stationlink_last.station = station
+            stationlink_last.time = form.time_last.data
 
-                if (authorize.has_role("admin")):
-                    data.staff = User.query.filter_by(email=form.staff.data).first().id
-                    data.vehicle = Vehicle.query.filter_by(vehicle_name=form.vehicle.data).first().id
-                elif (authorize.has_role("carrier")):
-                    data.staff = User.query.filter_by(email=form.carrierStaff.data).first().id
-                    data.vehicle = Vehicle.query.filter_by(vehicle_name=form.carrierVehicle.data).first().id
+            if (authorize.has_role("admin")):
+                data.staff = User.query.filter_by(email=form.staff.data).first().id
+                data.vehicle = Vehicle.query.filter_by(vehicle_name=form.vehicle.data).first().id
+            elif (authorize.has_role("carrier")):
+                data.staff = User.query.filter_by(email=form.carrierStaff.data).first().id
+                data.vehicle = Vehicle.query.filter_by(vehicle_name=form.carrierVehicle.data).first().id
 
-                data.stations.append(stationlink_first)
-                data.stations.append(stationlink_last)
-                db.session.add(data)
+            data.stations.append(stationlink_first)
+            data.stations.append(stationlink_last)
+            db.session.add(data)
+            db.session.commit()
+        elif type == "edit":
+            toedit = Link.query.filter_by(id=form.id.data).first()
+            sorted_stations = StationLink.query.filter_by(link_id=form.id.data).all()
+            sorted_stations.sort(key=lambda x: x.time)
+            toedit_station1 = sorted_stations[0]
+            toedit_station2 = sorted_stations[-1]
+            name = form.start.data.partition(" ")[0]
+            station = Station.query.filter_by(name=name).first()
+            toedit.start = station.id
+
+            nameend = form.end.data.partition(" ")[0]
+            station = Station.query.filter_by(name=nameend).first()
+            toedit.end = station.id
+            if (authorize.has_role("admin")):
+                toedit.staff = User.query.filter_by(email=form.staff.data).first().id
+                toedit.vehicle = Vehicle.query.filter_by(vehicle_name=form.vehicle.data).first().id
+            elif (authorize.has_role("carrier")):
+                toedit.staff = User.query.filter_by(email=form.carrierStaff.data).first().id
+                toedit.vehicle = Vehicle.query.filter_by(vehicle_name=form.carrierVehicle.data).first().id
+            toedit.time_first = form.time_first.data
+            toedit_station1.time = form.time_first.data
+            toedit_station2.time = form.time_last.data
+            station = Station.query.filter_by(name=name).first()
+            toedit_station1.station_id = station.id
+            station = Station.query.filter_by(name=nameend).first()
+            toedit_station2.station_id = station.id
+            toedit.time_last = form.time_last.data
+
+            db.session.commit()
+        elif type == "delete":
+            link = Link.query.filter_by(id=form.id.data).first()
+            tickets = Ticket.query.filter_by(linkid=link.id).all()
+            if len(tickets) > 0:
+                for ticket in tickets:
+                    db.session.delete(ticket)
+            if link is not None:
+                db.session.delete(link)
                 db.session.commit()
-            elif type == "edit":
-                toedit = Link.query.filter_by(id=form.id.data).first()
-                sorted_stations = StationLink.query.filter_by(link_id=form.id.data).all()
-                sorted_stations.sort(key=lambda x: x.time)
-                toedit_station1 = sorted_stations[0]
-                toedit_station2 = sorted_stations[-1]
-                name = form.start.data.partition(" ")[0]
-                station = Station.query.filter_by(name=name).first()
-                toedit.start = station.id
-
-                nameend = form.end.data.partition(" ")[0]
-                station = Station.query.filter_by(name=nameend).first()
-                toedit.end = station.id
-                if (authorize.has_role("admin")):
-                    toedit.staff = User.query.filter_by(email=form.staff.data).first().id
-                    toedit.vehicle = Vehicle.query.filter_by(vehicle_name=form.vehicle.data).first().id
-                elif (authorize.has_role("carrier")):
-                    toedit.staff = User.query.filter_by(email=form.carrierStaff.data).first().id
-                    toedit.vehicle = Vehicle.query.filter_by(vehicle_name=form.carrierVehicle.data).first().id
-                toedit.time_first = form.time_first.data
-                toedit_station1.time = form.time_first.data
-                toedit_station2.time = form.time_last.data
-                station = Station.query.filter_by(name=name).first()
-                toedit_station1.station_id = station.id
-                station = Station.query.filter_by(name=nameend).first()
-                toedit_station2.station_id = station.id
-                toedit.time_last = form.time_last.data
-
-                db.session.commit()
-            elif type == "delete":
-                link = Link.query.filter_by(id=form.id.data).first()
-                tickets = Ticket.query.filter_by(linkid=link.id).all()
-                if len(tickets) > 0:
-                    for ticket in tickets:
-                        db.session.delete(ticket)
-                if link is not None:
-                    db.session.delete(link)
-                    db.session.commit()
-            elif type == "stations":
-                id = request.form.get('id')
-                link = Link.query.filter_by(id=id).first()
-                a_zip = zip(request.form.getlist('station[]'), request.form.getlist('station_time[]'))
-                zipped_stations = list(a_zip)
-                for pair in zipped_stations:
-                    station_id, time = pair
-                    station_link = StationLink(time=time)
-                    station_link.station = Station.query.filter_by(id=station_id).first()
-                    link.stations.append(station_link)
-                db.session.commit()
-        else:
-            for err in form.errors:
-                flash(form.errors[err][0])
+        elif type == "stations":
+            return redirect(f"/station/edit_station/{request.form.get('id')}")
+            id = request.form.get('id')
+            link = Link.query.filter_by(id=id).first()
+            a_zip = zip(request.form.getlist('station[]'), request.form.getlist('station_time[]'))
+            zipped_stations = list(a_zip)
+            for pair in zipped_stations:
+                station_id, time = pair
+                station_link = StationLink(time=time)
+                station_link.station = Station.query.filter_by(id=station_id).first()
+                link.stations.append(station_link)
+            db.session.commit()
     return redirect("/link")
 
 @app.route('/vehicle/edit_vehicle/<string:type>', methods=['POST'])
@@ -480,34 +459,31 @@ def edit_link(type):
 def edit_vehicle(type):
     form = VehicleForm()
     if request.method == 'POST':
-        if form.validate_on_submit():
-            if type == "add":
-                data = Vehicle()
-                data.vehicle_name = form.vehicle_name.data.strip()
-                if (authorize.has_role("admin")):
-                    data.owner = User.query.filter_by(email=form.owner.data).first().id
-                elif (authorize.has_role("carrier")):
-                    data.owner = current_user.id
-                data.current_station = Station.query.filter_by(name=form.current_station.data).first().id
-                data.capacity = form.capacity.data
-                db.session.add(data)
+        if type == "add":
+            data = Vehicle()
+            data.vehicle_name = form.vehicle_name.data.strip()
+            if (authorize.has_role("admin")):
+                data.owner = User.query.filter_by(email=form.owner.data).first().id
+            elif (authorize.has_role("carrier")):
+                data.owner = current_user.id
+            data.current_station = Station.query.filter_by(name=form.current_station.data).first().id
+            data.capacity = form.capacity.data
+            db.session.add(data)
+            db.session.commit()
+        elif type == "edit":
+            toedit = Vehicle.query.filter_by(id=form.id.data).first()
+            toedit.vehicle_name = form.vehicle_name.data
+            if (authorize.has_role("admin")):
+                toedit.owner = User.query.filter_by(email=form.owner.data).first().id
+            toedit.current_station = Station.query.filter_by(name=form.current_station.data).first().id
+            toedit.capacity = form.capacity.data
+            db.session.commit()
+        elif type == "delete":
+            vehicle = Vehicle.query.filter_by(id=form.id.data).first()
+            if vehicle is not None:
+                db.session.delete(vehicle)
                 db.session.commit()
-            elif type == "edit":
-                toedit = Vehicle.query.filter_by(id=form.id.data).first()
-                toedit.vehicle_name = form.vehicle_name.data
-                if (authorize.has_role("admin")):
-                    toedit.owner = User.query.filter_by(email=form.owner.data).first().id
-                toedit.current_station = Station.query.filter_by(name=form.current_station.data).first().id
-                toedit.capacity = form.capacity.data
-                db.session.commit()
-            elif type == "delete":
-                vehicle = Vehicle.query.filter_by(id=form.id.data).first()
-                if vehicle is not None:
-                    db.session.delete(vehicle)
-                    db.session.commit()
-        else:
-            for err in form.errors:
-                flash(form.errors[err][0])
+
     return redirect("/vehicle")
 
 

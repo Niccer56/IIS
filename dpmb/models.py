@@ -9,6 +9,13 @@ UserRole = db.Table(
     db.Column('role_id', db.Integer, db.ForeignKey('roles.id'))
 )
 
+class TicketPrice(db.Model):
+    __tablename__ = "ticketprice"
+
+    id = db.Column(db.Integer, primary_key=True)
+    type = db.Column(db.String(80), nullable=False)
+    price = db.Column(db.Float, nullable=False)
+
 class Role(db.Model, AllowancesMixin):
     __tablename__ = 'roles'
 

@@ -33,6 +33,7 @@ class StationForm(FlaskForm):
     name = StringField(label='Station:', validators=[validators.InputRequired()])
     submit = SubmitField(label='Confirm', validators=[validators.InputRequired()])
     owner = SelectField(u'Owner: ', choices=User.getAllCarriersName, validators=[validators.InputRequired()])
+
 class LinkForm(FlaskForm):
     id = HiddenField()
     start = SelectField(u'Start: ', choices=StationLink.getAllStations, validators=[validators.InputRequired()])
@@ -57,7 +58,7 @@ class TicketForm(FlaskForm):
     id = HiddenField()
     email = SelectField(u'User: ', choices=User.getAllEmails, validators=[validators.InputRequired()])
     link = SelectField(u'Link: ', choices=Link.getAllLinks, validators=[validators.InputRequired()])
-    expiration = DateTimeLocalField('Expiration Date', format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])    # bude treba este format casu upravit
+    expiration = DateTimeLocalField('Expiration Date', format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])
     submit = SubmitField(label='Submit', validators=[validators.InputRequired()])
 
 class UserForm(FlaskForm):
