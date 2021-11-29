@@ -27,6 +27,8 @@
           <th scope="col">#</th>
           <th scope="col">User email</th>
           <th scope="col">Link#</th>
+          <th scope="col">Ticket type</th>
+          <th scope="col">Ticket price</th>
           <th scope="col">Expiration</th>
           <th scope="col">Actions</th>
         </tr>
@@ -39,10 +41,16 @@
           <td>{{cnt.value}}</td>
           <td>{{ticket[1]}}</td>
           <td>{{ticket[4].id|string +" "+  ticket[2].name +"-" + ticket[3].name}}</td>
+          <td>{{ticket[5].type}}</td>
+          <td>{{ticket[0].price|string +"€"}}</td>
           <td>{{ticket[0].expiration}}</td>
           <td>
-            <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editTicket{{ticket[0].id}}" onclick="selected('{{ticket[1]}}','{{ticket[4].id|string +" "+  ticket[2].name +"-" + ticket[3].name}}')"><i class="fas fa-edit"></i></button>
-            <button class="btn btn-danger" data-toggle="modal" data-target="#deleteTicket{{ticket[0].id}}"><i class="fas fa-trash"></i></button>
+            <button class="btn btn-warning mr-2" data-toggle="modal" data-target="#editTicket{{ticket[0].id}}" onclick="selected('{{ticket[1]}}','{{ticket[4].id|string +" "+  ticket[2].name +"-" + ticket[3].name}}','{{ticket[5].type}}')"><i class="fas fa-edit"></i></button>
+            <button class="btn btn-danger mr-2" data-toggle="modal" data-target="#deleteTicket{{ticket[0].id}}"><i class="fas fa-trash"></i></button>
+            {% if (ticket[0].paid != True) %}
+            <a href="{{url_for('pay_ticket',id=ticket[0].id)}}">
+              <button class="btn btn-success"><i class="fas fa-money-bill-wave"></i></button> </a>  
+            {% endif %}
           </td>
             <!--Edit Ticket-->
             <div class="modal fade" id="editTicket{{ticket[0].id}}" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
@@ -67,7 +75,10 @@
                       {{ form.link.label() }} {{ form.link(class="form-control") }}
                     </div>
                     {% endif %}
-
+                    <div class="js-type">
+                      {{ form.type.label() }} {{ form.type(class="form-control") }}
+                    </div>
+                    
                     {% if authorize.has_role('staff') %}
                     <div class="js-link">
                       {{ form.staffLink.label() }} {{ form.staffLink(class="form-control") }}
@@ -132,13 +143,12 @@
             {% if authorize.has_role('admin') %}
               {{ form.link.label() }} {{ form.link(class="form-control") }}
             {% endif %}
-
+           
+              {{ form.type.label() }} {{ form.type(class="form-control") }}
             {% if authorize.has_role('staff') %}
               {{ form.staffLink.label() }} {{ form.staffLink(class="form-control") }}
             {% endif %}
             {{ form.expiration.label() }} {{ form.expiration(class="form-control") }}
-
-
 
           </div>
           <div class="modal-footer text-left">
@@ -153,12 +163,15 @@
   </div>
 
   <script>
-    function selected(val, val2) {
+    function selected(val, val2, val3) {
       $('.js-user option:selected').removeAttr("selected");
       $('.js-user option[value="'+val+'"]').attr('selected','selected');
 
       $('.js-link option:selected').removeAttr("selected");
       $('.js-link option[value="'+val2+'"]').attr('selected','selected');
+
+      $('.js-type option:selected').removeAttr("selected");
+      $('.js-type option[value="'+val3+'"]').attr('selected','selected');
     }
     </script>
   <style>

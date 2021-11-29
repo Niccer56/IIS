@@ -16,6 +16,13 @@ class TicketPrice(db.Model):
     type = db.Column(db.String(80), nullable=False)
     price = db.Column(db.Float, nullable=False)
 
+    def getAllTicketTypes():
+        query = TicketPrice.query.all()
+        ticket_type = []
+        for ticket in query:
+            ticket_type.append(ticket.type)
+        return ticket_type
+
 class Role(db.Model, AllowancesMixin):
     __tablename__ = 'roles'
 
@@ -77,7 +84,9 @@ class Ticket(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), nullable=False)
     type_id = db.Column(db.ForeignKey('ticketprice.id'))
+    price = db.Column(db.Float, nullable=False)
     linkid = db.Column(db.Integer, db.ForeignKey("link.id"), nullable=False)
+    paid = db.Column(db.Boolean, nullable=False)
     expiration = db.Column(db.DateTime)
 
 class StationLink(db.Model):

@@ -67,11 +67,15 @@ def check_tickets():
             data.linkid = id
             data.type_id = TicketPrice.query.filter_by(type=type).first().id
             data.expiration = time_last
+            data.paid = False
+            data.price = TicketPrice.query.filter_by(type=type).first().price
             db.session.add(data)
 
         db.session.commit()
 
-    return redirect("/home")
+    if authorize.has_role("admin", "carrier", "staff", "user"):
+        return redirect("/home")
+    return redirect("/register")
 
 @app.route('/yourTickets', methods=['GET', 'POST'])
 @login_required
@@ -122,10 +126,11 @@ def ticket_page():
     if (authorize.has_role("admin")):
         for ticket in query:
             link = Link.query.filter_by(id=ticket.linkid).first()
+            type = TicketPrice.query.filter_by(id=ticket.type_id).first()
             start_station = Station.query.filter_by(id=link.start).first()
             end_station = Station.query.filter_by(id=link.end).first()
 
-            tickets.append([ticket, ticket.email, start_station, end_station, link])
+            tickets.append([ticket, ticket.email, start_station, end_station, link, type])
         return render_template('ticket.html', tickets=tickets, form=form)
 
     if (authorize.has_role("staff")):
@@ -134,8 +139,9 @@ def ticket_page():
             if (link.staff == current_user.id):
                 start_station = Station.query.filter_by(id=link.start).first()
                 end_station = Station.query.filter_by(id=link.end).first()
+                type = TicketPrice.query.filter_by(id=ticket.type_id).first()
 
-                tickets.append([ticket, ticket.email, start_station, end_station, link])
+                tickets.append([ticket, ticket.email, start_station, end_station, link, type])
         return render_template('ticket.html', tickets=tickets, form=form)
 
 @app.route('/vehicle', methods=['GET'])
@@ -380,6 +386,23 @@ def edit_customer(type):
 
     return redirect("/customer")
 
+@app.route('/ticket/pay/<int:id>', methods=['GET']) 
+@login_required
+@authorize.has_role("admin", "staff")
+def pay_ticket(id):
+    ticket = Ticket.query.filter_by(id=id).first()
+    ticket.paid = True
+    db.session.commit()
+    return redirect('/ticket')
+
+@app.route('/myticket/pay/<int:id>', methods=['GET']) 
+@login_required
+def pay_myticket(id):
+    ticket = Ticket.query.filter_by(id=id).first()
+    ticket.paid = True
+    db.session.commit()
+    return redirect('/yourTickets')
+
 @app.route('/ticket/edit_ticket/<string:type>', methods=['POST'])
 @login_required
 @authorize.has_role("admin", "staff")
@@ -394,7 +417,10 @@ def edit_ticket(type):
                 link = form.staffLink.data.partition(" ")[0]
             data.email = form.email.data
             data.linkid = link
+            data.type_id = TicketPrice.query.filter_by(type=form.type.data).first().id
             data.expiration = form.expiration.data.strftime("%Y-%m-%dT%H:%M")
+            data.price = TicketPrice.query.filter_by(type=form.type.data).first().price
+            data.paid = False
             db.session.add(data)
             db.session.commit()
         elif type == "edit":
@@ -405,6 +431,8 @@ def edit_ticket(type):
                 link = form.staffLink.data.partition(" ")[0]
             toedit.email = form.email.data
             toedit.linkid = link
+            toedit.type_id = TicketPrice.query.filter_by(type=form.type.data).first().id
+            toedit.price = TicketPrice.query.filter_by(type=form.type.data).first().price
             toedit.expiration = form.expiration.data.strftime("%Y-%m-%dT%H:%M")
             db.session.commit()
         elif type == "delete":

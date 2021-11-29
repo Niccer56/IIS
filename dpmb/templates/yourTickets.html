@@ -15,6 +15,7 @@
           <th scope="col">Departure time</th>
           <th scope="col">Link</th>
           <th scope="col">Expiration</th>
+          <th scope="col">Actions</th>
         </tr>
       </thead>
       <tbody>
@@ -26,6 +27,12 @@
           <td>{{ticket[4].time_first}}</td>
           <td>{{ticket[2].name +"-" + ticket[3].name}}</td>
           <td>{{ticket[0].expiration}}</td>
+          <td>{% if (ticket[0].paid != True) %}
+            <a href="{{url_for('pay_myticket',id=ticket[0].id)}}">
+              <button class="btn btn-success"><i class="fas fa-money-bill-wave"></i></button> </a>  
+            {% endif %}
+          </td>
+        </tr>
           {% endfor %}
         </tbody>
     </table>

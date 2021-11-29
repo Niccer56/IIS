@@ -2,7 +2,7 @@ from flask_wtf import FlaskForm
 from wtforms import StringField, PasswordField, SubmitField, validators, SelectField, IntegerField
 from wtforms import DateTimeLocalField
 from wtforms.fields.simple import HiddenField
-from dpmb.models import User, Vehicle, Station, Link, Role, StationLink
+from dpmb.models import TicketPrice, User, Vehicle, Station, Link, Role, StationLink
 
 class RegisterForm(FlaskForm):
     link_id = HiddenField()
@@ -58,7 +58,8 @@ class TicketForm(FlaskForm):
     id = HiddenField()
     email = SelectField(u'User: ', choices=User.getAllEmails, validators=[validators.InputRequired()])
     link = SelectField(u'Link: ', choices=Link.getAllLinks, validators=[validators.InputRequired()])
-    staffLink = link = SelectField(u'Link: ', choices=Link.getAllStaffLinks, validators=[validators.InputRequired()])
+    staffLink = SelectField(u'Link: ', choices=Link.getAllStaffLinks, validators=[validators.InputRequired()])
+    type = SelectField(u'Type: ', choices=TicketPrice.getAllTicketTypes, validators=[validators.InputRequired()])
     expiration = DateTimeLocalField('Expiration Date', format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])
     submit = SubmitField(label='Submit', validators=[validators.InputRequired()])
 
