@@ -63,7 +63,6 @@ def yourTickets_page():
             link = Link.query.filter_by(id=ticket.linkid).first()
             start_station = Station.query.filter_by(id=link.start).first()
             end_station = Station.query.filter_by(id=link.end).first()
-        
             tickets.append([ticket, ticket.email, start_station, end_station, link])
 
     return render_template('yourTickets.html', tickets=tickets) 

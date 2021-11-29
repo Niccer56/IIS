@@ -12,7 +12,8 @@
       <thead>
         <tr>
           <th scope="col">#</th>
-          <th scope="col">Link#</th>
+          <th scope="col">Departure time</th>
+          <th scope="col">Link</th>
           <th scope="col">Expiration</th>
         </tr>
       </thead>
@@ -22,7 +23,8 @@
         {% set cnt.value = cnt.value + 1 %}
         <tr>
           <td>{{cnt.value}}</td>
-          <td>{{ticket[4].id|string +" "+  ticket[2].name +"-" + ticket[3].name}}</td>
+          <td>{{ticket[4].time_first}}</td>
+          <td>{{ticket[2].name +"-" + ticket[3].name}}</td>
           <td>{{ticket[0].expiration}}</td>
           {% endfor %}
         </tbody>
