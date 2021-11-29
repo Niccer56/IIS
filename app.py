@@ -5,6 +5,7 @@ from flask import render_template, flash, request, redirect
 from dpmb import app, login_manager, authorize
 from flask_login import login_user, login_required, current_user
 from dpmb import bcrypt
+from datetime import datetime
 
 @login_manager.user_loader
 def load_user(user_id):
@@ -177,6 +178,8 @@ def link_page():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login_page():
+    if authorize.has_role("admin", "carrier", "staff", "user"):
+        return redirect("/home")
     form = LoginForm()
     if request.method == 'POST':
         if form.validate_on_submit():
@@ -301,6 +304,9 @@ def edit_customer(type):
     form = UserForm()
     if request.method == 'POST':
         if type == "add":
+            if User.query.filter_by(email=form.email.data.strip()).all() > 0:
+                flash("User with email {form.email.data.strip()} already exists.")
+                return redirect("/customer")
             data = User()
             data.first_name = form.first_name.data.strip()
             data.last_name = form.last_name.data.strip()
@@ -316,6 +322,9 @@ def edit_customer(type):
             db.session.add(data)
             db.session.commit()
         elif type == "edit":
+            if User.query.filter_by(email=form.email.data.strip()).all() > 0:
+                flash("User with email {form.email.data.strip()} already exists.")
+                return redirect("/customer")
             toedit = User.query.filter_by(id=form.id.data).first()
             if (authorize.has_role("carrier")):
                 role = Role.query.filter_by(name="staff").first()
@@ -390,6 +399,13 @@ def edit_link(type):
             stationlink_last.station = station
             stationlink_last.time = form.time_last.data
 
+            if name == nameend:
+                flash("Same station selected as start and end.")
+                return redirect("/link")
+            if data.time_first > data.time_last:
+                flash("Start station's time can't be lower than end station's time")
+                return redirect("/link")
+
             if (authorize.has_role("admin")):
                 data.staff = User.query.filter_by(email=form.staff.data).first().id
                 data.vehicle = Vehicle.query.filter_by(vehicle_name=form.vehicle.data).first().id
@@ -403,17 +419,39 @@ def edit_link(type):
             db.session.commit()
         elif type == "edit":
             toedit = Link.query.filter_by(id=form.id.data).first()
+
+            for x in toedit.stations:
+                if form.time_first.data > x.time and x.station_id != toedit.start:
+                    flash("Selected times are in colision with link's station times")
+                    return redirect("/link")
+                if form.time_last.data < x.time and x.station_id != toedit.end:
+                    flash("Selected times are in colision with link's station times")
+                    return redirect("/link")
+
             sorted_stations = StationLink.query.filter_by(link_id=form.id.data).all()
             sorted_stations.sort(key=lambda x: x.time)
             toedit_station1 = sorted_stations[0]
             toedit_station2 = sorted_stations[-1]
             name = form.start.data.partition(" ")[0]
             station = Station.query.filter_by(name=name).first()
+            if len(StationLink.query.filter_by(link_id=form.id.data, station_id=station.id).all()) > 0:
+                if station.id != toedit.start:
+                    flash("Station is already used in this link.")
+                    return redirect("/link")
             toedit.start = station.id
 
             nameend = form.end.data.partition(" ")[0]
             station = Station.query.filter_by(name=nameend).first()
+            if len(StationLink.query.filter_by(link_id=form.id.data, station_id=station.id).all()) > 0:
+                if station.id != toedit.end:
+                    flash("Station is already used in this link.")
+                    return redirect("/link")
             toedit.end = station.id
+
+            if name == nameend:
+                flash("Same station selected as start and end.")
+                return redirect("/link")
+
             if (authorize.has_role("admin")):
                 toedit.staff = User.query.filter_by(email=form.staff.data).first().id
                 toedit.vehicle = Vehicle.query.filter_by(vehicle_name=form.vehicle.data).first().id
@@ -446,9 +484,18 @@ def edit_link(type):
             zipped_stations = list(a_zip)
             for pair in zipped_stations:
                 station_id, time = pair
+                time = datetime.strptime(time, '%Y-%m-%dT%H:%M')
+
+                if station_id == link.start or station_id == link.end:
+                    flash("Selected station is already used as start or end station.")
+                    return redirect(f"/station/edit_station/{id}")
                 if time < link.time_first or time > link.time_last:
                     flash(f"Selected station time {time} is out of the link's time range.")
                     return redirect(f"/station/edit_station/{id}")
+                if len(StationLink.query.filter_by(link_id=id, station_id=station_id).all()) > 0:
+                    flash("Duplicate station usage.")
+                    return redirect(f"/station/edit_station/{id}")
+
                 station_link = StationLink(time=time)
                 station_link.station = Station.query.filter_by(id=station_id).first()
                 link.stations.append(station_link)

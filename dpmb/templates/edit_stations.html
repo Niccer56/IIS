@@ -8,16 +8,16 @@
 
 <form action="/link/edit_link/stations" method="POST" class="form-register">
     <div class="modal-body">
-    
 
-        
+
+
         <div class="dynamic-stuff">
         <!-- Dynamic element will be cloned here -->
         <!-- You can call clone function once if you want it to show it a first element-->
         </div>
-        
+
         <!-- Button -->
-        
+
         <div class="row">
             <div class="col-md-12">
                 <p class="add-one">+ Add Station</p>
@@ -27,16 +27,16 @@
             <button type="submit" id="singlebutton" name="singlebutton" class="btn btn-primary">Save stations</button>
             </div>
         </div>
-    
-    
+
+
 
 
     </div>
 </form>
 <div class="form-group dynamic-element" style="display:none">
     <div class="row justify-content-center">
-        
-        
+
+
         <!-- Replace these fields -->
         <div class="col-md-6">
              <input type="hidden" id="id" name="id" value={{link.id}}>
@@ -58,9 +58,18 @@
         </div>
         </div>
     </div>
-
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <br>
+        <ul class=flashes>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
 <script>
-      
+
       //Clone the hidden element and shows it
       $('.add-one').click(function(){
         $('.dynamic-element').first().clone().appendTo('.dynamic-stuff').show();
