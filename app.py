@@ -487,7 +487,9 @@ def edit_link(type):
             for pair in zipped_stations:
                 station_id, time = pair
                 time = datetime.strptime(time, '%Y-%m-%dT%H:%M')
-
+                if station_id == "--Choose Station--":
+                    flash("Station has been left unselected")
+                    return redirect(f"/station/edit_station/{id}")
                 if station_id == link.start or station_id == link.end:
                     flash("Selected station is already used as start or end station.")
                     return redirect(f"/station/edit_station/{id}")
