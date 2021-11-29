@@ -1,0 +1,145 @@
+{% extends 'base.html' %}
+
+{% block title %}
+    Ticket
+{% endblock title %}
+
+{% block mainContent %}
+
+<form action="/buy/check" method="POST" class="form-register">
+    <div class="modal-body">
+
+
+
+        <div class="dynamic-stuff">
+        <!-- Dynamic element will be cloned here -->
+        <!-- You can call clone function once if you want it to show it a first element-->
+        </div>
+
+        <!-- Button -->
+
+        <div class="row">
+            <div class="col-md-12">
+                <p class="add-one">+ Add Ticket</p>
+            </div>
+        <div class="col-md-5"></div>
+            <div class="col-md-6">
+            <button type="submit" id="singlebutton" name="singlebutton" class="btn btn-primary">Buy Tickets</button>
+            </div>
+        </div>
+
+
+
+
+    </div>
+</form>
+<div class="form-group dynamic-element" style="display:none">
+    <div class="row justify-content-center">
+
+
+        <!-- Replace these fields -->
+        <div class="col-md-4">
+             <input type="hidden" id="id" name="id" value={{link_id}}>
+            <input class="form-control" id="email" name="email[]" placeholder="Your Email" required="" type="email">
+        </div>
+        <div class="col-md-4">
+
+          <select id="types" name="types[]" class="form-control">
+            <option selected=selected>--Choose Station--</option>
+            {% for current_type in ticket_type %}
+                <option value="{{current_type.type}}">{{current_type.type}}</option>
+            {% endfor %}
+            </select>
+        </div>
+        <!-- End of fields-->
+        <div class="col-md-2">
+            <p class="delete">x</p>
+        </div>
+        </div>
+    </div>
+    {% with messages = get_flashed_messages() %}
+      {% if messages %}
+        <br>
+        <ul class=flashes>
+        {% for message in messages %}
+          <li>{{ message }}</li>
+        {% endfor %}
+        </ul>
+      {% endif %}
+    {% endwith %}
+<script>
+
+      //Clone the hidden element and shows it
+      $('.add-one').click(function(){
+        $('.dynamic-element').first().clone().appendTo('.dynamic-stuff').show();
+        attach_delete();
+      });
+      //Attach functionality to delete buttons
+      function attach_delete(){
+        $('.delete').off();
+        $('.delete').click(function(){
+          console.log("click");
+          $(this).closest('.dynamic-element').remove();
+        });
+      }
+    </script>
+    <style>
+
+      table {
+        border-collapse: collapse;
+        border-radius: 10px;
+        border-style: hidden; /* hide standard table (collapsed) border */
+        box-shadow: 0 0 0 1px #666; /* this draws the table border  */
+      }
+
+      td {
+          border: 1px solid #ccc;
+      }
+
+      .form-container{
+        padding:10px;
+        padding-bottom:25px;
+        margin:0 auto;
+        margin-top:20px;
+        width:100%;
+        border-radius:20px;
+      }
+
+      .add-one{
+        color:green;
+        text-align:center;
+        font-weigth:bolder;
+        cursor:pointer;
+        margin-top:10px;
+      }
+
+      .delete{
+        color:white;
+        background-color:rgb(231, 76, 60);
+        text-align:center;
+        margin-top:6px;
+        font-weight:700;
+        border-radius:5px;
+        min-width:20px;
+        cursor:pointer;
+      }
+
+      #singlebutton{
+        width:100%;
+        margin-top:20px;
+      }
+
+      .title{
+        text-align:center;
+        font-size:40px;
+        margin-bottom:40px;
+      }
+
+      .dynamic-element{
+        margin-bottom:0px;
+      }
+
+
+    </style>
+
+{% endblock mainContent %}

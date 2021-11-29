@@ -1,6 +1,8 @@
 flask
 flask_sqlalchemy
 flask_login
+flask_wtf
+pymysql
 flask_authorize
 wtforms
 email_validator

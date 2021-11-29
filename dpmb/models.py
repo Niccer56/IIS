@@ -76,6 +76,7 @@ class Ticket(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     email = db.Column(db.String(120), nullable=False)
+    type_id = db.Column(db.ForeignKey('ticketprice.id'))
     linkid = db.Column(db.Integer, db.ForeignKey("link.id"), nullable=False)
     expiration = db.Column(db.DateTime)
 

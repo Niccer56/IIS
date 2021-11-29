@@ -1,5 +1,5 @@
 from flask_login.utils import logout_user
-from dpmb.models import db, User, Role, Ticket, Link, Station, Vehicle, StationLink
+from dpmb.models import TicketPrice, db, User, Role, Ticket, Link, Station, Vehicle, StationLink
 from dpmb.forms import LinkForm, LoginForm, RegisterForm, VehicleForm, SearchForm, StationForm, TicketForm, UserForm
 from flask import render_template, flash, request, redirect
 from dpmb import app, login_manager, authorize
@@ -20,7 +20,6 @@ def home_page():
 @app.route('/home/search', methods=['POST'])
 def find_links():
     form = SearchForm()
-    reg_form = RegisterForm()
     if request.method == 'POST':
         stationlinks = []
         times = []
@@ -33,23 +32,46 @@ def find_links():
                     stationlinks.append([x, x.time, y.time])
 
         display_content = [form.start.data, form.end.data]
-        return render_template('searched_links.html', links=stationlinks, display_content=display_content, times=times, form=reg_form)
+        remaining_tickets = []
+        for stationlink in stationlinks:
+            link = Link.query.filter_by(id=stationlink[0].link_id).first()
+            tickets = Ticket.query.filter_by(linkid=link.id).all()
+            capacity = Vehicle.query.filter_by(id=link.vehicle).first().capacity
+            if len(tickets) > 0:
+                capacity = capacity - len(tickets)
+            remaining_tickets.append(capacity)
+
+        print(remaining_tickets)
+        return render_template('searched_links.html', links=stationlinks, display_content=display_content, times=times, remaining_tickets=remaining_tickets)
 
     return redirect("/home")
 
-@app.route('/buy', methods=['POST'])
-def buy_tickets():
-    form = RegisterForm()
+@app.route('/buy/<int:id>', methods=['POST', 'GET'])
+def buy_tickets(id):
+    print(id)
+    ticket_type = TicketPrice.query.all()
+
+    return render_template('buy_tickets.html', link_id = id, ticket_type = ticket_type)
+
+@app.route('/buy/check', methods=['POST'])
+def check_tickets():
     if request.method == 'POST':
-        data = Ticket()
-        exp_date = Link.query.filter_by(id=form.link_id.data).first().time_last
-        data.email = form.email.data
-        data.linkid = form.link_id.data
-        data.expiration = exp_date
-        db.session.add(data)
+        id = request.form.get('id')
+        time_last = Link.query.filter_by(id=id).first().time_last
+        a_zip = zip(request.form.getlist('email[]'), request.form.getlist('types[]'))
+        zipped_tickets = list(a_zip)
+        for pair in zipped_tickets:
+            email, type = pair
+            data = Ticket()
+            data.email = email
+            data.linkid = id
+            data.type_id = TicketPrice.query.filter_by(type=type).first().id
+            data.expiration = time_last
+            db.session.add(data)
+
         db.session.commit()
 
-    return redirect('/home')
+    return redirect("/home")
 
 @app.route('/yourTickets', methods=['GET', 'POST'])
 @login_required
