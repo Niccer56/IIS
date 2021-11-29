@@ -304,7 +304,7 @@ def edit_customer(type):
     form = UserForm()
     if request.method == 'POST':
         if type == "add":
-            if User.query.filter_by(email=form.email.data.strip()).all() > 0:
+            if len(User.query.filter_by(email=form.email.data.strip()).all()) > 0:
                 flash("User with email {form.email.data.strip()} already exists.")
                 return redirect("/customer")
             data = User()
@@ -322,10 +322,11 @@ def edit_customer(type):
             db.session.add(data)
             db.session.commit()
         elif type == "edit":
-            if User.query.filter_by(email=form.email.data.strip()).all() > 0:
-                flash("User with email {form.email.data.strip()} already exists.")
-                return redirect("/customer")
             toedit = User.query.filter_by(id=form.id.data).first()
+            if form.email.data.strip() != toedit.email:
+                if len(User.query.filter_by(email=form.email.data.strip()).all()) > 0:
+                    flash("User with email {form.email.data.strip()} already exists.")
+                    return redirect("/customer")
             if (authorize.has_role("carrier")):
                 role = Role.query.filter_by(name="staff").first()
             elif (authorize.has_role("admin")):
@@ -334,7 +335,8 @@ def edit_customer(type):
             toedit.first_name = form.first_name.data
             toedit.last_name = form.last_name.data
             toedit.email = form.email.data
-            toedit.password = bcrypt.generate_password_hash(form.password.data)
+            if form.password.data:
+                toedit.password = bcrypt.generate_password_hash(form.password.data)
             toedit.roles = [role]
             db.session.commit()
         elif type == "delete":
