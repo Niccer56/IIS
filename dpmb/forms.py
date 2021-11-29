@@ -41,6 +41,8 @@ class LinkForm(FlaskForm):
     time_last = DateTimeLocalField('Last Station Time',format='%Y-%m-%dT%H:%M', validators=[validators.InputRequired()])
     staff = SelectField(u'Staff: ', choices=User.getAllStaffNames , validators=[validators.InputRequired()])
     carrierStaff = SelectField(u'Staff: ', choices=Link.getAllOwnersStaff , validators=[validators.InputRequired()])
+    vehicle = SelectField(u'Vehicle: ', choices=Vehicle.getAllVehicles , validators=[validators.InputRequired()])
+    carrierVehicle = SelectField(u'Vehicle: ', choices=Link.getAllOwnersVehicles , validators=[validators.InputRequired()])
     submit = SubmitField(label='Confirm', validators=[validators.InputRequired()])
 
 class VehicleForm(FlaskForm):

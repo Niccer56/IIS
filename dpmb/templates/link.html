@@ -66,6 +66,7 @@
                     <div class="js-carrier">
                       {{ form.staff(class="form-control ", placeholder="Staff's Name") }}
                     </div>
+                      {{ form.vehicle.label() }} {{ form.vehicle(class="form-control") }}
                     {% endif %}
 
                     {% if authorize.has_role('carrier') %}
@@ -73,6 +74,8 @@
                     <div class="js-carrier">
                       {{ form.carrierStaff(class="form-control ", placeholder="Staff's Name") }}
                     </div>
+                    
+                    {{ form.carrierVehicle.label() }} {{ form.carrierVehicle(class="form-control") }}
                     {% endif %}
                   </div>
                   <div class="modal-footer text-left">
@@ -156,12 +159,14 @@
                     <div class="js-carrier">
                       {{ form.staff(class="form-control ", placeholder="Staff's Name") }}
                     </div>
+                    {{ form.vehicle.label() }} {{ form.vehicle(class="form-control") }}
                     {% endif %}
 
                     {% if authorize.has_role('carrier') %}
                     {{ form.carrierStaff.label() }}
                     <div class="js-carrier">
                       {{ form.carrierStaff(class="form-control ", placeholder="Staff's Name") }}
+                      {{ form.carrierVehicle.label() }} {{ form.carrierVehicle(class="form-control") }}
                     </div>
                     {% endif %}
       

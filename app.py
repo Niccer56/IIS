@@ -373,8 +373,12 @@ def edit_link(type):
 
             if (authorize.has_role("admin")):
                 data.staff = User.query.filter_by(email=form.staff.data).first().id 
+                data.vehicle = Vehicle.query.filter_by(vehicle_name=form.vehicle.data).first().id 
             elif (authorize.has_role("carrier")):
-                data.staff = User.query.filter_by(email=form.carrierStaff.data).first().id  
+                data.staff = User.query.filter_by(email=form.carrierStaff.data).first().id 
+                data.vehicle = Vehicle.query.filter_by(vehicle_name=form.carrierVehicle.data).first().id     
+    
+                
             data.stations.append(stationlink_first)
             data.stations.append(stationlink_last)
             db.session.add(data)
@@ -395,8 +399,10 @@ def edit_link(type):
             toedit.end = station.id
             if (authorize.has_role("admin")):
                 toedit.staff = User.query.filter_by(email=form.staff.data).first().id 
+                toedit.vehicle = Vehicle.query.filter_by(vehicle_name=form.vehicle.data).first().id   
             elif (authorize.has_role("carrier")):
                 toedit.staff = User.query.filter_by(email=form.carrierStaff.data).first().id 
+                toedit.vehicle = Vehicle.query.filter_by(vehicle_name=form.carrierVehicle.data).first().id   
             toedit.time_first = form.time_first.data
             toedit_station1.time = form.time_first.data
             toedit_station2.time = form.time_last.data

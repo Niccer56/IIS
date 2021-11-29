@@ -114,7 +114,8 @@ class Link(db.Model):
     time_last = db.Column(db.DateTime, nullable=False)
     stations = db.relationship("StationLink", back_populates="link", cascade="all, delete-orphan")
     staff = db.Column(db.Integer, db.ForeignKey("users.id"))
-   # vehicle =   db.Column(db.Integer, db.ForeignKey("vehicle.id"))
+
+    vehicle =   db.Column(db.Integer, db.ForeignKey("vehicle.id"))
     def getAllOwnersStaff():
        
         names = []  
@@ -126,6 +127,18 @@ class Link(db.Model):
                 
             names.append(f"{user.email}")
         return names
+
+    def getAllOwnersVehicles():
+           
+        names = []  
+        
+
+        
+        vehicles=Vehicle.query.filter_by(owner=current_user.id).all()
+        for vehicle in vehicles:
+                
+            names.append(f"{vehicle.vehicle_name}")
+        return names    
 
     def getAllLinks():
         query = Link.query.all()
@@ -144,3 +157,10 @@ class Vehicle(db.Model):
     owner = db.Column(db.Integer, db.ForeignKey("users.id"))
     capacity = db.Column(db.Integer)
     current_station = db.Column(db.Integer, db.ForeignKey("station.id"))
+
+    def getAllVehicles():
+        names = []  
+        vehicles=Vehicle.query.all()
+        for vehicle in vehicles:
+            names.append(f"{vehicle.vehicle_name}")
+        return names     
