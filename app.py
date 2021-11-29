@@ -440,13 +440,15 @@ def edit_link(type):
                 db.session.delete(link)
                 db.session.commit()
         elif type == "stations":
-            return redirect(f"/station/edit_station/{request.form.get('id')}")
             id = request.form.get('id')
             link = Link.query.filter_by(id=id).first()
             a_zip = zip(request.form.getlist('station[]'), request.form.getlist('station_time[]'))
             zipped_stations = list(a_zip)
             for pair in zipped_stations:
                 station_id, time = pair
+                if time < link.time_first or time > link.time_last:
+                    flash(f"Selected station time {time} is out of the link's time range.")
+                    return redirect(f"/station/edit_station/{id}")
                 station_link = StationLink(time=time)
                 station_link.station = Station.query.filter_by(id=station_id).first()
                 link.stations.append(station_link)
